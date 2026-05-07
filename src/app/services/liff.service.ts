@@ -12,8 +12,8 @@ export interface LiffProfile {
   providedIn: 'root',
 })
 export class LiffService {
-  private readonly liffId = 'YOUR_LIFF_ID'; // The user will need to replace this
-  
+  private readonly liffId = '2010005263-lb7PgLvF'; // The user will need to replace this
+
   profile = signal<LiffProfile | null>(null);
   error = signal<string | null>(null);
   isLoggedIn = signal<boolean>(false);
@@ -23,7 +23,7 @@ export class LiffService {
     try {
       await liff.init({ liffId: this.liffId });
       this.isInitialized.set(true);
-      
+
       if (liff.isLoggedIn()) {
         this.isLoggedIn.set(true);
         const profile = await liff.getProfile();
