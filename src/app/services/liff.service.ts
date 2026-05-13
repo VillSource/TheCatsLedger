@@ -18,11 +18,13 @@ export class LiffService {
   error = signal<string | null>(null);
   isLoggedIn = signal<boolean>(false);
   isInitialized = signal<boolean>(false);
+  isInClient = signal<boolean>(false);
 
   async init() {
     try {
       await liff.init({ liffId: this.liffId });
       this.isInitialized.set(true);
+      this.isInClient.set(liff.isInClient());
 
       if (liff.isLoggedIn()) {
         this.isLoggedIn.set(true);
