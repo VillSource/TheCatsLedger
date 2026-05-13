@@ -198,6 +198,133 @@ export class LiffService {
       },
     };
 
+    const message = {
+      type: 'bubble',
+      altText: `${senderName} is requesting ${amountFormatted} for "${bill.name}"`,
+      body: {
+        type: 'box',
+        layout: 'vertical',
+        contents: [
+          {
+            type: 'text',
+            text: "😼 The Cat's Ledger",
+            weight: 'bold',
+            color: '#1DB446',
+            size: 'sm',
+          },
+          {
+            type: 'text',
+            text: `${bill.emoji} ${bill.name}`,
+            weight: 'bold',
+            size: 'xxl',
+            margin: 'md',
+          },
+          {
+            type: 'text',
+            text: `Note: ${bill.note} || '-'`,
+            size: 'xs',
+            color: '#aaaaaa',
+            wrap: true,
+          },
+          {
+            type: 'separator',
+            margin: 'xxl',
+          },
+          {
+            type: 'box',
+            layout: 'vertical',
+            margin: 'xxl',
+            spacing: 'sm',
+            contents: [
+              {
+                type: 'box',
+                layout: 'horizontal',
+                contents: [
+                  {
+                    type: 'text',
+                    text: 'Amount',
+                    size: 'sm',
+                    color: '#555555',
+                    flex: 0,
+                  },
+                  {
+                    type: 'text',
+                    text: amountFormatted,
+                    size: 'sm',
+                    color: '#111111',
+                    align: 'end',
+                  },
+                ],
+              },
+              {
+                type: 'box',
+                layout: 'horizontal',
+                contents: [
+                  {
+                    type: 'text',
+                    text: 'Request By',
+                    size: 'sm',
+                    color: '#555555',
+                    flex: 0,
+                  },
+                  {
+                    type: 'text',
+                    text: senderName,
+                    size: 'sm',
+                    color: '#111111',
+                    align: 'end',
+                  },
+                ],
+              },
+              {
+                type: 'separator',
+                margin: 'xxl',
+              },
+              {
+                type: 'button',
+                action: {
+                  type: 'uri',
+                  label: 'Pay',
+                  uri: `https://miniapp.line.me/${environment.liffId}?bill=1234567890`,
+                },
+                margin: 'none',
+                color: '#ff0000',
+                height: 'sm',
+                style: 'primary',
+              },
+            ],
+          },
+          {
+            type: 'box',
+            layout: 'horizontal',
+            margin: 'md',
+            contents: [
+              {
+                type: 'text',
+                text: 'BILL ID',
+                size: 'xxs',
+                color: '#aaaaaa',
+                flex: 0,
+                margin: 'none',
+              },
+              {
+                type: 'text',
+                text: '#743289384279',
+                color: '#aaaaaa',
+                size: 'xxs',
+                align: 'end',
+              },
+            ],
+          },
+        ],
+      },
+      styles: {
+        footer: {
+          separator: true,
+        },
+      },
+    };
+
     try {
       const result = await liff.shareTargetPicker([flexMessage]);
       return result !== undefined && result !== null;
