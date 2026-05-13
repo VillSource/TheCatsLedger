@@ -230,13 +230,12 @@ export class LedgerComponent {
     };
 
     try {
-      await this.ledgerService.addBill(bill);
+      const billId = await this.ledgerService.addBill(bill);
       this.isDialogVisible.set(false);
 
       // After saving, open LINE shareTargetPicker to notify the debtor.
-      // This is a best-effort action — if the user is not inside the LINE
-      // client or the picker is closed, we simply continue.
-      await this.liffService.shareToDebtor(bill);
+      // Pass the full bill with its new ID to generate the correct share link.
+      await this.liffService.shareToDebtor({ ...bill, id: billId });
     } catch (err) {
       console.error('Failed to save bill:', err);
     } finally {

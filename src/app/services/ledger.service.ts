@@ -75,8 +75,8 @@ export class LedgerService {
     });
   }
 
-  async addBill(bill: Omit<DebtBill, 'id'>): Promise<void> {
-    await addDoc(collection(this.db, 'bills'), {
+  async addBill(bill: Omit<DebtBill, 'id'>): Promise<string> {
+    const docRef = await addDoc(collection(this.db, 'bills'), {
       name: bill.name,
       emoji: bill.emoji,
       amount: bill.amount,
@@ -86,5 +86,6 @@ export class LedgerService {
       ...(bill.debtorName ? { debtorName: bill.debtorName } : {}),
       ...(bill.debtorAvatar ? { debtorAvatar: bill.debtorAvatar } : {}),
     });
+    return docRef.id;
   }
 }

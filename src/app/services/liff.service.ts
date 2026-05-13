@@ -61,7 +61,7 @@ export class LiffService {
    * is enabled in the LIFF channel settings.
    * Resolves to true if a target was selected, false otherwise.
    */
-  async shareToDebtor(bill: Omit<DebtBill, 'id'>): Promise<boolean> {
+  async shareToDebtor(bill: DebtBill): Promise<boolean> {
     if (!liff.isApiAvailable('shareTargetPicker')) {
       console.info('shareTargetPicker is not available in this environment');
       return false;
@@ -186,7 +186,7 @@ export class LiffService {
               action: {
                 type: 'uri',
                 label: 'View in App',
-                uri: `https://miniapp.line.me/${environment.liffId}`,
+                uri: `https://miniapp.line.me/${environment.liffId}?bill=${bill.id}`,
               },
             },
           ],
@@ -285,7 +285,7 @@ export class LiffService {
                 action: {
                   type: 'uri',
                   label: 'Pay',
-                  uri: `https://miniapp.line.me/${environment.liffId}?bill=1234567890`,
+                  uri: `https://miniapp.line.me/${environment.liffId}?bill=${bill.id}`,
                 },
                 margin: 'none',
                 color: '#ff0000',
@@ -309,7 +309,7 @@ export class LiffService {
               },
               {
                 type: 'text',
-                text: '#743289384279',
+                text: `#${bill.id}`,
                 color: '#aaaaaa',
                 size: 'xxs',
                 align: 'end',
