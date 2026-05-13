@@ -53,3 +53,10 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## PrimeNG AI Instructions
+
+- PrimeNG provides AI-friendly documentation. Use `https://primeng.org/llms/llms.txt` and `https://primeng.org/llms/llms-full.txt` for documentation indexes.
+- You can append `.md` to any PrimeNG documentation URL (e.g., `https://primeng.org/button.md`) to read the component documentation in Markdown format.
+- If you need to understand a PrimeNG component's API or usage, use the `read_url_content` tool on the corresponding `.md` URL (e.g. `https://primeng.org/button.md`).
+- PrimeNG provides an MCP server (`@primeng/mcp`) for comprehensive references on components, props, events, and theming.
