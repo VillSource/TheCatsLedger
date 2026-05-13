@@ -18,14 +18,18 @@ import { environment } from '../../environments/environment';
 
 export interface DebtBill {
   id?: string;
+  creditorId?: string;
+  creditorName?: string;
+  creditorAvatar?: string;
+  debtorId?: string;
+  debtorName?: string;
+  debtorAvatar?: string;
   name: string;
   emoji: string;
   note?: string;
   amount: number;
   date: Date;
   status: 'PENDING' | 'PAID';
-  debtorName?: string;
-  debtorAvatar?: string;
 }
 
 @Injectable({
@@ -46,10 +50,7 @@ export class LedgerService {
 
   getBills(): Observable<DebtBill[]> {
     return new Observable<DebtBill[]>((subscriber) => {
-      const billsQuery = query(
-        collection(this.db, 'bills'),
-        orderBy('date', 'desc')
-      );
+      const billsQuery = query(collection(this.db, 'bills'), orderBy('date', 'desc'));
 
       const unsubscribe = onSnapshot(
         billsQuery,
@@ -70,7 +71,7 @@ export class LedgerService {
           });
           subscriber.next(bills);
         },
-        (error) => subscriber.error(error)
+        (error) => subscriber.error(error),
       );
 
       return () => unsubscribe();
@@ -85,8 +86,9 @@ export class LedgerService {
       status: bill.status,
       date: Timestamp.fromDate(bill.date instanceof Date ? bill.date : new Date()),
       ...(bill.note ? { note: bill.note } : {}),
-      ...(bill.debtorName ? { debtorName: bill.debtorName } : {}),
-      ...(bill.debtorAvatar ? { debtorAvatar: bill.debtorAvatar } : {}),
+      ...(bill.creditorId ? { creditorId: bill.creditorId } : {}),
+      ...(bill.creditorName ? { creditorName: bill.creditorName } : {}),
+      ...(bill.creditorAvatar ? { creditorAvatar: bill.creditorAvatar } : {}),
     });
     return docRef.id;
   }
@@ -100,13 +102,17 @@ export class LedgerService {
       return {
         id: docSnap.id,
         name: data['name'] as string,
+        creditorAvatar: data['creditorAvatar'] as string | undefined,
+        creditorName: data['creditorName'] as string | undefined,
+        creditorId: data['creditorId'] as string | undefined,
+        debtorAvatar: data['debtorAvatar'] as string | undefined,
+        debtorName: data['debtorName'] as string | undefined,
+        debtorId: data['debtorId'] as string | undefined,
         emoji: data['emoji'] as string,
         note: data['note'] as string | undefined,
         amount: data['amount'] as number,
         date: (data['date'] as Timestamp).toDate(),
         status: data['status'] as 'PENDING' | 'PAID',
-        debtorName: data['debtorName'] as string | undefined,
-        debtorAvatar: data['debtorAvatar'] as string | undefined,
       };
     }
     return null;

@@ -26,8 +26,12 @@ import { LiffService } from '../../services/liff.service';
   ],
   template: `
     <div class="p-4 sm:p-8 md:p-12 w-full max-w-4xl mx-auto font-sans">
-      <div class="sticky top-0 z-40 flex justify-between items-center mb-6 py-4 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 -mx-4 px-4 sm:-mx-8 sm:px-8 md:-mx-12 md:px-12 shadow-sm">
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">
+      <div
+        class="sticky top-0 z-40 flex justify-between items-center mb-6 py-4 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 -mx-4 px-4 sm:-mx-8 sm:px-8 md:-mx-12 md:px-12 shadow-sm"
+      >
+        <h2
+          class="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight"
+        >
           Your Ledger
         </h2>
         <p-button
@@ -49,10 +53,14 @@ import { LiffService } from '../../services/liff.service';
             <p-card
               styleClass="!rounded-2xl !shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow !bg-white/90 dark:!bg-slate-900/90 backdrop-blur-sm overflow-hidden"
             >
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2 sm:px-4 py-1">
+              <div
+                class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2 sm:px-4 py-1"
+              >
                 <!-- Bill Info -->
                 <div class="flex items-center gap-4">
-                  <div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                  <div
+                    class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-2xl shadow-sm border border-slate-200 dark:border-slate-700"
+                  >
                     {{ bill.emoji }}
                   </div>
                   <div class="min-w-0 flex-1">
@@ -68,7 +76,11 @@ import { LiffService } from '../../services/liff.service';
                     @if (bill.debtorName) {
                       <div class="flex items-center gap-1.5 mt-1">
                         @if (bill.debtorAvatar) {
-                          <p-avatar [image]="bill.debtorAvatar" shape="circle" styleClass="!w-5 !h-5"></p-avatar>
+                          <p-avatar
+                            [image]="bill.debtorAvatar"
+                            shape="circle"
+                            styleClass="!w-5 !h-5"
+                          ></p-avatar>
                         } @else {
                           <p-avatar
                             [label]="bill.debtorName.charAt(0)"
@@ -76,7 +88,9 @@ import { LiffService } from '../../services/liff.service';
                             styleClass="!w-5 !h-5 !text-[10px] font-bold !bg-sky-100 !text-sky-700 dark:!bg-sky-900/50 dark:!text-sky-300"
                           ></p-avatar>
                         }
-                        <span class="text-xs font-semibold text-sky-600 dark:text-sky-400">Owed by: {{ bill.debtorName }}</span>
+                        <span class="text-xs font-semibold text-sky-600 dark:text-sky-400"
+                          >Owed by: {{ bill.debtorName }}</span
+                        >
                       </div>
                     }
                   </div>
@@ -110,9 +124,13 @@ import { LiffService } from '../../services/liff.service';
               </div>
             </p-card>
           } @empty {
-            <div class="text-center p-12 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md rounded-3xl border border-dashed border-slate-300 dark:border-slate-700 shadow-sm">
+            <div
+              class="text-center p-12 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md rounded-3xl border border-dashed border-slate-300 dark:border-slate-700 shadow-sm"
+            >
               <i class="pi pi-receipt text-6xl text-slate-300 dark:text-slate-600 mb-4"></i>
-              <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300 mb-2">No bills yet</h3>
+              <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300 mb-2">
+                No bills yet
+              </h3>
               <p class="text-slate-500 dark:text-slate-400">
                 You haven't added any debts to your ledger.
               </p>
@@ -136,13 +154,28 @@ import { LiffService } from '../../services/liff.service';
           <label for="name" class="font-semibold text-slate-700 dark:text-slate-200">
             Bill Name <span class="text-red-500">*</span>
           </label>
-          <input pInputText id="name" formControlName="name" placeholder="e.g. Dinner, Taxi" autocomplete="off" />
+          <input
+            pInputText
+            id="name"
+            formControlName="name"
+            placeholder="e.g. Dinner, Taxi"
+            autocomplete="off"
+          />
         </div>
 
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex flex-col gap-2 sm:w-1/3">
-            <label for="emoji" class="font-semibold text-slate-700 dark:text-slate-200">Emoji</label>
-            <input pInputText id="emoji" formControlName="emoji" placeholder="💸" class="text-center" autocomplete="off" />
+            <label for="emoji" class="font-semibold text-slate-700 dark:text-slate-200"
+              >Emoji</label
+            >
+            <input
+              pInputText
+              id="emoji"
+              formControlName="emoji"
+              placeholder="💸"
+              class="text-center"
+              autocomplete="off"
+            />
           </div>
           <div class="flex flex-col gap-2 sm:w-2/3">
             <label for="amount" class="font-semibold text-slate-700 dark:text-slate-200">
@@ -164,7 +197,13 @@ import { LiffService } from '../../services/liff.service';
           <label for="note" class="font-semibold text-slate-700 dark:text-slate-200">
             Note <span class="text-slate-400 font-normal text-sm">(Optional)</span>
           </label>
-          <input pInputText id="note" formControlName="note" placeholder="Any details..." autocomplete="off" />
+          <input
+            pInputText
+            id="note"
+            formControlName="note"
+            placeholder="Any details..."
+            autocomplete="off"
+          />
         </div>
 
         <div class="flex justify-end gap-2 mt-4">
@@ -227,8 +266,12 @@ export class LedgerComponent {
 
     this.isSaving.set(true);
     const { name, emoji, amount, note } = this.billForm.value;
+    const profile = this.liffService.profile();
 
     const bill: Omit<DebtBill, 'id'> = {
+      creditorId: profile?.userId ?? '',
+      creditorName: profile?.displayName ?? 'Unknown',
+      creditorAvatar: profile?.pictureUrl,
       name: name!,
       emoji: emoji || '💸',
       amount: amount!,
