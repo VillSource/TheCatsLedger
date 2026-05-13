@@ -6,26 +6,29 @@ import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-root',
-  imports: [ProfileComponent, LedgerComponent, ButtonModule],
+  imports: [LedgerComponent, ButtonModule],
   template: `
-    <main class="relative min-h-screen pb-24 bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+    <main
+      class="relative min-h-screen pb-24 bg-slate-50 dark:bg-slate-950 transition-colors duration-300"
+    >
       <!-- Fixed Theme Toggle Button -->
-      <div class="fixed top-4 right-4 z-50">
-        <p-button 
-          [icon]="isDark() ? 'pi pi-sun' : 'pi pi-moon'" 
-          [rounded]="true" 
-          [text]="true" 
+      <div class="fixed bottom-4 left-4 z-50">
+        <p-button
+          [icon]="isDark() ? 'pi pi-sun' : 'pi pi-moon'"
+          [rounded]="true"
+          [text]="true"
           severity="secondary"
           styleClass="!bg-white/80 dark:!bg-slate-800/80 backdrop-blur-sm shadow-md"
-          (onClick)="toggleTheme()">
+          (onClick)="toggleTheme()"
+        >
         </p-button>
       </div>
 
-      <app-profile />
+      <!-- <app-profile /> -->
       <app-ledger />
     </main>
   `,
-  styleUrl: './app.css'
+  styleUrl: './app.css',
 })
 export class App implements OnInit {
   private readonly liffService = inject(LiffService);
@@ -33,7 +36,7 @@ export class App implements OnInit {
 
   ngOnInit() {
     this.liffService.init();
-    
+
     // Check system preference on load
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       this.setDarkMode(true);
@@ -53,4 +56,3 @@ export class App implements OnInit {
     }
   }
 }
-

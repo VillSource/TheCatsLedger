@@ -31,7 +31,11 @@ export class LiffService {
         const profile = await liff.getProfile();
         this.profile.set(profile);
       } else {
-        this.isLoggedIn.set(false);
+        if (liff.isInClient()) {
+          liff.login();
+        } else {
+          this.isLoggedIn.set(false);
+        }
       }
     } catch (err) {
       console.error('LIFF initialization failed', err);
