@@ -123,8 +123,8 @@ export class LedgerService {
     updateDoc(docRef, {
       debtors: {
         [userId]: {
-          avatar: pictureUrl,
-          name: displayName,
+          ...(pictureUrl ? { avatar: pictureUrl } : {}),
+          name: displayName ?? 'Unknown',
         },
       },
     });
