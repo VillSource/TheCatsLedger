@@ -89,7 +89,7 @@ import { LiffService } from '../../services/liff.service';
                           ></p-avatar>
                         }
                         <span class="text-xs font-semibold text-sky-600 dark:text-sky-400"
-                          >Owed by: {{ debtor.value.name }}</span
+                          >Bill for: {{ debtor.value.name }}</span
                         >
                       </div>
                     }
