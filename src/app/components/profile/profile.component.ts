@@ -1,73 +1,89 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { LiffService } from '../../services/liff.service';
-import { NgOptimizedImage } from '@angular/common';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { AvatarModule } from 'primeng/avatar';
 
 @Component({
   selector: 'app-profile',
-  imports: [NgOptimizedImage],
+  imports: [CardModule, ButtonModule, ProgressSpinnerModule, AvatarModule],
   template: `
-    <div class="profile-card">
+    <div class="profile-container">
       @if (liffService.profile(); as profile) {
-        <div class="profile-header">
-          <div class="avatar-container">
-            @if (profile.pictureUrl) {
-              <img [ngSrc]="profile.pictureUrl" width="120" height="120" alt="Profile Picture" class="avatar" priority>
-            } @else {
-              <div class="avatar-placeholder">{{ profile.displayName.charAt(0) }}</div>
+        <p-card styleClass="profile-card">
+          <div class="profile-header">
+            <div class="avatar-container">
+              @if (profile.pictureUrl) {
+                <p-avatar [image]="profile.pictureUrl" size="xlarge" shape="circle" styleClass="custom-avatar"></p-avatar>
+              } @else {
+                <p-avatar [label]="profile.displayName.charAt(0)" size="xlarge" shape="circle" styleClass="custom-avatar placeholder-avatar"></p-avatar>
+              }
+            </div>
+            <h1 class="display-name">{{ profile.displayName }}</h1>
+            @if (profile.statusMessage) {
+              <p class="status-message">{{ profile.statusMessage }}</p>
             }
           </div>
-          <h1 class="display-name">{{ profile.displayName }}</h1>
-          @if (profile.statusMessage) {
-            <p class="status-message">{{ profile.statusMessage }}</p>
-          }
-        </div>
 
-        <div class="profile-details">
-          <div class="detail-item">
-            <span class="label">User ID</span>
-            <span class="value">{{ profile.userId }}</span>
+          <div class="profile-details">
+            <div class="detail-item">
+              <span class="label">User ID</span>
+              <span class="value">{{ profile.userId }}</span>
+            </div>
           </div>
-        </div>
 
-        <button (click)="liffService.logout()" class="btn btn-logout" aria-label="Logout from LINE">Logout</button>
+          <p-button label="Logout" icon="pi pi-sign-out" severity="danger" (onClick)="liffService.logout()" styleClass="w-full mt-4"></p-button>
+        </p-card>
       } @else if (liffService.isLoggedIn() === false) {
-        <div class="login-prompt">
-          <div class="icon-container" aria-hidden="true">
-             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="line-icon">
-                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM16.6 13.88C16.39 14.39 15.82 14.71 15.25 14.71H8.75C8.18 14.71 7.61 14.39 7.4 13.88C7.19 13.37 7.37 12.8 7.82 12.44L11.07 9.84C11.6 9.42 12.4 9.42 12.93 9.84L16.18 12.44C16.63 12.8 16.81 13.37 16.6 13.88Z" fill="currentColor"/>
-             </svg>
+        <p-card styleClass="login-card">
+          <div class="login-content">
+            <div class="icon-container">
+              <i class="pi pi-comments text-4xl"></i>
+            </div>
+            <h2>Welcome to LIFF</h2>
+            <p>Sign in with your LINE account to view your profile</p>
+            <p-button label="Login with LINE" icon="pi pi-sign-in" severity="success" (onClick)="liffService.login()" styleClass="w-full mt-4"></p-button>
           </div>
-          <h2>Welcome to LIFF</h2>
-          <p>Sign in with your LINE account to view your profile</p>
-          <button (click)="liffService.login()" class="btn btn-login" aria-label="Login with LINE account">Login with LINE</button>
-        </div>
+        </p-card>
       } @else if (liffService.error(); as error) {
-        <div class="error-container">
-          <p class="error-text">Error: {{ error }}</p>
-        </div>
+        <p-card styleClass="error-card">
+          <div class="error-content">
+             <i class="pi pi-exclamation-triangle text-red-500 text-4xl mb-3"></i>
+             <p class="error-text">Error: {{ error }}</p>
+          </div>
+        </p-card>
       } @else {
         <div class="loading-container">
-          <div class="loader"></div>
-          <p>Loading Profile...</p>
+          <p-progressSpinner styleClass="custom-spinner" strokeWidth="4" animationDuration=".5s"></p-progressSpinner>
+          <p class="mt-4 text-gray-500">Loading Profile...</p>
         </div>
       }
     </div>
   `,
   styles: [`
-    .profile-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      padding: 2.5rem;
-      width: 100%;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-      animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    .profile-container {
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      text-align: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, #f6f8fb 0%, #e5ebf4 100%);
+    }
+
+    ::ng-deep .profile-card, ::ng-deep .login-card, ::ng-deep .error-card {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 24px;
+      box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
+      animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+      border: none;
+      background: white;
+    }
+
+    ::ng-deep .p-card-body {
+      padding: 2.5rem;
     }
 
     @keyframes fadeIn {
@@ -76,162 +92,143 @@ import { NgOptimizedImage } from '@angular/common';
     }
 
     .profile-header {
+      text-align: center;
       margin-bottom: 2rem;
     }
 
     .avatar-container {
-      position: relative;
       margin-bottom: 1.5rem;
-      padding: 5px;
-      border-radius: 50%;
-      background: linear-gradient(45deg, var(--primary), #34d399);
-      display: inline-block;
+      display: flex;
+      justify-content: center;
     }
 
-    .avatar {
-      border-radius: 50%;
-      border: 4px solid #1e293b;
+    ::ng-deep .custom-avatar {
+      width: 120px;
+      height: 120px;
+      border: 4px solid white;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      font-size: 3rem;
+    }
+    
+    ::ng-deep .custom-avatar img {
+      width: 100%;
+      height: 100%;
       object-fit: cover;
     }
 
-    .avatar-placeholder {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
+    ::ng-deep .placeholder-avatar {
       background: #334155;
       color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      font-weight: 700;
+      font-weight: bold;
     }
 
     .display-name {
       font-size: 1.75rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 0.5rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin: 0 0 0.5rem;
+      font-family: 'Inter', sans-serif;
     }
 
     .status-message {
       font-size: 1rem;
-      color: var(--text-secondary);
-      max-width: 250px;
-      margin: 0 auto;
+      color: #64748b;
+      margin: 0;
       line-height: 1.5;
     }
 
     .profile-details {
-      width: 100%;
-      background: rgba(0, 0, 0, 0.2);
+      background: #f8fafc;
       border-radius: 16px;
       padding: 1.25rem;
       margin-bottom: 2rem;
-      text-align: left;
+      border: 1px solid #e2e8f0;
     }
 
     .detail-item {
       display: flex;
       flex-direction: column;
       gap: 0.25rem;
+      text-align: left;
     }
 
     .label {
       font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: var(--text-secondary);
+      color: #94a3b8;
+      font-weight: 600;
     }
 
     .value {
       font-family: monospace;
       font-size: 0.875rem;
-      color: var(--text-primary);
+      color: #334155;
       word-break: break-all;
     }
 
-    .btn {
-      width: 100%;
-      padding: 1rem;
-      border-radius: 12px;
-      border: none;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-
-    .btn-login {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 10px 15px -3px rgba(6, 199, 85, 0.3);
-    }
-
-    .btn-login:hover {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 20px 25px -5px rgba(6, 199, 85, 0.4);
-    }
-
-    .btn-logout {
-      background: rgba(255, 255, 255, 0.05);
-      color: #ef4444;
-      border: 1px solid rgba(239, 68, 68, 0.2);
-    }
-
-    .btn-logout:hover {
-      background: rgba(239, 68, 68, 0.1);
-      border-color: rgba(239, 68, 68, 0.4);
-    }
-
-    .login-prompt {
-      padding: 1rem 0;
-    }
-
-    .login-prompt h2 {
-      margin: 1.5rem 0 0.5rem;
-      font-size: 1.5rem;
-    }
-
-    .login-prompt p {
-      color: var(--text-secondary);
-      margin-bottom: 2rem;
+    .login-content, .error-content {
+      text-align: center;
     }
 
     .icon-container {
-      width: 64px;
-      height: 64px;
-      background: rgba(6, 199, 85, 0.1);
-      border-radius: 20px;
+      width: 80px;
+      height: 80px;
+      background: #e0f2fe;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto;
-      color: var(--primary);
+      margin: 0 auto 1.5rem;
+      color: #0ea5e9;
     }
 
-    .line-icon {
-      width: 40px;
-      height: 40px;
+    .login-content h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1.5rem;
+      color: #0f172a;
+      font-weight: 700;
     }
 
-    .loader {
-      width: 40px;
-      height: 40px;
-      border: 3px solid rgba(255, 255, 255, 0.1);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
+    .login-content p {
+      color: #64748b;
+      margin-bottom: 2rem;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    ::ng-deep .custom-spinner .p-progress-spinner-circle {
+      stroke: #0ea5e9;
+    }
+    
+    ::ng-deep .w-full {
+      width: 100%;
+    }
+    
+    ::ng-deep .mt-4 {
+      margin-top: 1rem;
+    }
+    
+    .mb-3 {
+      margin-bottom: 0.75rem;
+    }
+    
+    .text-4xl {
+      font-size: 2.25rem;
+    }
+    
+    .text-red-500 {
+      color: #ef4444;
+    }
+    
+    .text-gray-500 {
+      color: #6b7280;
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
