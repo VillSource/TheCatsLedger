@@ -13,6 +13,7 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
+import { LiffService } from '../../services/liff.service';
 
 @Component({
   selector: 'app-bill-detail',
@@ -139,6 +140,7 @@ import { DividerModule } from 'primeng/divider';
               icon="pi pi-share-alt"
               styleClass="w-full"
               severity="secondary"
+              (click)="shareAgain()"
             ></p-button>
             <p-button
               label="Mark as Paid"
@@ -163,6 +165,7 @@ import { DividerModule } from 'primeng/divider';
 export class BillDetailComponent implements OnInit, AfterViewInit {
   private route = inject(ActivatedRoute);
   private ledgerService = inject(LedgerService);
+  private liffService = inject(LiffService);
 
   bill = signal<DebtBill | null>(null);
   isLoading = signal(true);
@@ -184,5 +187,11 @@ export class BillDetailComponent implements OnInit, AfterViewInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) return;
     await this.ledgerService.addDebtorToBills(id);
+  }
+
+  async shareAgain() {
+    const bill = this.bill();
+    if (!bill) return;
+    await this.liffService.shareToDebtor(bill);
   }
 }
