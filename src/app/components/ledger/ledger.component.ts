@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
+import { AvatarModule } from 'primeng/avatar';
 import { CommonModule } from '@angular/common';
 
 interface DebtBill {
@@ -12,12 +13,13 @@ interface DebtBill {
   date: Date;
   status: 'PENDING' | 'PAID';
   debtorName?: string;
+  debtorAvatar?: string;
 }
 
 @Component({
   selector: 'app-ledger',
   standalone: true,
-  imports: [CardModule, ButtonModule, CommonModule],
+  imports: [CardModule, ButtonModule, AvatarModule, CommonModule],
   template: `
     <div class="p-4 sm:p-8 md:p-12 w-full max-w-4xl mx-auto font-sans">
       <div class="flex justify-between items-center mb-6">
@@ -42,7 +44,14 @@ interface DebtBill {
                     @if (bill.note) { <span class="mx-1">•</span> {{ bill.note }} }
                   </p>
                   @if (bill.debtorName) {
-                    <p class="text-xs font-semibold text-sky-600 dark:text-sky-400 mt-0.5">Owed by: {{ bill.debtorName }}</p>
+                    <div class="flex items-center gap-1.5 mt-1">
+                      @if (bill.debtorAvatar) {
+                        <p-avatar [image]="bill.debtorAvatar" shape="circle" styleClass="!w-5 !h-5"></p-avatar>
+                      } @else {
+                        <p-avatar [label]="bill.debtorName.charAt(0)" shape="circle" styleClass="!w-5 !h-5 !text-[10px] font-bold !bg-sky-100 !text-sky-700 dark:!bg-sky-900/50 dark:!text-sky-300"></p-avatar>
+                      }
+                      <span class="text-xs font-semibold text-sky-600 dark:text-sky-400">Owed by: {{ bill.debtorName }}</span>
+                    </div>
                   }
                 </div>
               </div>
@@ -83,7 +92,8 @@ export class LedgerComponent {
       amount: 1250,
       date: new Date(2026, 4, 10),
       status: 'PENDING',
-      debtorName: 'Alice Johnson'
+      debtorName: 'Alice Johnson',
+      debtorAvatar: 'https://profile.line-scdn.net/0hF103fH-MDU1NFD-VdO9mD0lKDXY9QDBoOShpW0MdBStxFTV_byw9D0EUBX0hGWQuOCw7DhMUVngp'
     },
     {
       id: '2',
