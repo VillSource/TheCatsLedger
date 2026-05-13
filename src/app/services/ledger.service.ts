@@ -102,7 +102,12 @@ export class LedgerService {
     const docRef = doc(this.db, `bills/${billId}`);
     const bill = await getDoc(docRef);
 
+    console.log('bill', bill.data());
+    console.log('creditorId', bill.data()!['creditorId']);
+    console.log('userId', this.liffService.profile()?.userId);
+
     if (bill?.exists() && bill.data()['creditorId'] === this.liffService.profile()?.userId) {
+      console.log('Already debtor');
       return;
     }
 

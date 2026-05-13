@@ -185,6 +185,7 @@ export class BillDetailComponent implements OnInit, AfterViewInit {
 
   async ngAfterViewInit() {
     const id = this.route.snapshot.paramMap.get('id');
+    console.log('bill detail id', id);
     if (!id) return;
     await this.ledgerService.addDebtorToBills(id);
   }
