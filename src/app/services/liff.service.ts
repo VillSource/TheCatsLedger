@@ -178,6 +178,17 @@ export class LiffService {
               align: 'center',
               wrap: true,
             },
+            {
+              type: 'button',
+              style: 'primary',
+              color: '#FF8C42',
+              margin: 'md',
+              action: {
+                type: 'uri',
+                label: 'View in App',
+                uri: `https://miniapp.line.me/${environment.liffId}`,
+              },
+            },
           ],
         },
         styles: {
