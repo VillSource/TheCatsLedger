@@ -285,7 +285,7 @@ export class LiffService {
                 action: {
                   type: 'uri',
                   label: 'Pay',
-                  uri: `https://miniapp.line.me/${environment.liffId}?bill=${bill.id}`,
+                  uri: `https://miniapp.line.me/${environment.liffId}/bill/${bill.id}`,
                 },
                 margin: 'none',
                 color: '#ff0000',

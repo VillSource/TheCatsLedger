@@ -8,6 +8,8 @@ import {
   orderBy,
   onSnapshot,
   addDoc,
+  doc,
+  getDoc,
   Timestamp,
   type Firestore,
 } from 'firebase/firestore';
@@ -87,5 +89,26 @@ export class LedgerService {
       ...(bill.debtorAvatar ? { debtorAvatar: bill.debtorAvatar } : {}),
     });
     return docRef.id;
+  }
+
+  async getBill(id: string): Promise<DebtBill | null> {
+    const docRef = doc(this.db, 'bills', id);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      return {
+        id: docSnap.id,
+        name: data['name'] as string,
+        emoji: data['emoji'] as string,
+        note: data['note'] as string | undefined,
+        amount: data['amount'] as number,
+        date: (data['date'] as Timestamp).toDate(),
+        status: data['status'] as 'PENDING' | 'PAID',
+        debtorName: data['debtorName'] as string | undefined,
+        debtorAvatar: data['debtorAvatar'] as string | undefined,
+      };
+    }
+    return null;
   }
 }

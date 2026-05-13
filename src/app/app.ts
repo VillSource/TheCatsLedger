@@ -1,13 +1,13 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { ProfileComponent } from './components/profile/profile.component';
-import { LedgerComponent } from './components/ledger/ledger.component';
 import { LiffService } from './services/liff.service';
 import { ButtonModule } from 'primeng/button';
 import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
-  imports: [LedgerComponent, ButtonModule, ProfileComponent],
+  imports: [RouterOutlet, ButtonModule, ProfileComponent],
   template: `
     <main
       class="relative min-h-screen pb-24 bg-slate-50 dark:bg-slate-950 transition-colors duration-300"
@@ -25,11 +25,11 @@ import { environment } from '../environments/environment';
         </p-button>
       </div>
 
-      <!-- <app-profile /> -->
+      <!-- Main Content Area -->
       @if (!liffService.isInClient() && !liffService.isLoggedIn()) {
         <app-profile />
       } @else {
-        <app-ledger />
+        <router-outlet />
       }
     </main>
   `,

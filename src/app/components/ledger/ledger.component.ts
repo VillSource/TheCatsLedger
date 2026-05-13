@@ -7,6 +7,7 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { LedgerService, DebtBill } from '../../services/ledger.service';
 import { LiffService } from '../../services/liff.service';
 
@@ -21,6 +22,7 @@ import { LiffService } from '../../services/liff.service';
     InputNumberModule,
     ReactiveFormsModule,
     CommonModule,
+    RouterLink,
   ],
   template: `
     <div class="p-4 sm:p-8 md:p-12 w-full max-w-4xl mx-auto font-sans">
@@ -97,7 +99,13 @@ import { LiffService } from '../../services/liff.service';
                       {{ bill.status }}
                     </div>
                   </div>
-                  <p-button icon="pi pi-chevron-right" [text]="true" [rounded]="true" severity="secondary"></p-button>
+                  <p-button
+                    icon="pi pi-chevron-right"
+                    [text]="true"
+                    [rounded]="true"
+                    severity="secondary"
+                    [routerLink]="['/bill', bill.id]"
+                  ></p-button>
                 </div>
               </div>
             </p-card>
