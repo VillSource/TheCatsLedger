@@ -198,7 +198,7 @@ export class LiffService {
       },
     };
 
-    const message = {
+    const message: any = {
       type: 'bubble',
       altText: `${senderName} is requesting ${amountFormatted} for "${bill.name}"`,
       body: {
@@ -326,7 +326,7 @@ export class LiffService {
     };
 
     try {
-      const result = await liff.shareTargetPicker([flexMessage]);
+      const result = await liff.shareTargetPicker([message]);
       return result !== undefined && result !== null;
     } catch (err) {
       console.error('shareTargetPicker failed:', err);
