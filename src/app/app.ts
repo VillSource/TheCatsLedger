@@ -30,12 +30,12 @@ import { environment } from '../environments/environment';
         </div>
 
         <!-- Main Content Area -->
-        @if (!liffService.isInClient() && !liffService.isLoggedIn()) {
-          <app-profile />
-        } @else if (liffService.isInClient() && !liffService.isLoggedIn()) {
-          <app-loading />
-        } @else {
+        @if (liffService.isLoggedIn()) {
           <router-outlet />
+        } @else if (!liffService.isInClient()) {
+          <app-profile />
+        } @else {
+          <app-loading />
         }
       </main>
     }

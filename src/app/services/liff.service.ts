@@ -25,7 +25,6 @@ export class LiffService {
   async init() {
     try {
       await liff.init({ liffId: this.liffId });
-      this.isInitialized.set(true);
       this.isInClient.set(liff.isInClient());
 
       if (liff.isLoggedIn()) {
@@ -43,9 +42,11 @@ export class LiffService {
           this.isLoggedIn.set(false);
         }
       }
+      this.isInitialized.set(true);
     } catch (err) {
       console.error('LIFF initialization failed', err);
       this.error.set(err instanceof Error ? err.message : 'Unknown error');
+      this.isInitialized.set(true); // Still set to true so app can show error state
     }
   }
 
