@@ -51,10 +51,13 @@ export class App implements OnInit {
   ngOnInit() {
     this.liffService.init();
 
-    // Check system preference on load
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      this.setDarkMode(true);
-    }
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+    this.setDarkMode(systemDark.matches);
+
+    // Listen for system changes and update theme
+    systemDark.addEventListener('change', (e) => {
+      this.setDarkMode(e.matches);
+    });
   }
 
   toggleTheme() {
