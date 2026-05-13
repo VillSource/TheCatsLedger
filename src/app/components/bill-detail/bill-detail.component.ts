@@ -30,9 +30,9 @@ import { LiffService } from '../../services/liff.service';
   ],
   template: `
     <div class="p-4 max-w-2xl mx-auto">
-      <div class="mb-4">
+      <!-- <div class="mb-4">
         <p-button icon="pi pi-chevron-left" label="Back" [text]="true" routerLink="/"></p-button>
-      </div>
+      </div> -->
 
       @if (isLoading()) {
         <div class="flex justify-center p-8">
