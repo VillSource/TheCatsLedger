@@ -163,24 +163,70 @@ import { LiffService } from '../../services/liff.service';
           />
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-4">
-          <div class="flex flex-col gap-2 sm:w-1/3">
-            <label for="emoji" class="font-semibold text-slate-700 dark:text-slate-200"
-              >Emoji</label
+        <div class="flex flex-col gap-2">
+          <div class="flex justify-between items-center">
+            <label class="font-semibold text-slate-700 dark:text-slate-200">Emoji</label>
+            <button
+              type="button"
+              (click)="toggleEmojiPicker()"
+              class="text-xs font-bold text-orange-500 hover:text-orange-600 px-2 py-1 rounded-lg bg-orange-50 dark:bg-orange-900/20"
             >
-            <input
-              pInputText
-              id="emoji"
-              formControlName="emoji"
-              placeholder="💸"
-              class="text-center"
-              autocomplete="off"
-            />
+              {{ isEmojiPickerOpen() ? 'Collapse' : 'Change Emoji' }}
+            </button>
           </div>
-          <div class="flex flex-col gap-2 sm:w-2/3">
+          
+          <div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700">
+            <div class="w-12 h-12 flex items-center justify-center text-3xl bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+              {{ billForm.get('emoji')?.value }}
+            </div>
+            <div class="flex-1">
+              <p class="text-xs text-slate-500 dark:text-slate-400">Current selection</p>
+              <p class="text-sm font-bold text-slate-700 dark:text-slate-200">
+                {{ isEmojiPickerOpen() ? 'Select an icon below' : 'Tap "Change" to see more' }}
+              </p>
+            </div>
+          </div>
+
+          @if (isEmojiPickerOpen()) {
+            <div class="flex flex-wrap gap-2 p-3 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-inner mt-1 max-h-48 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200">
+              @for (e of emojis; track e) {
+                <button
+                  type="button"
+                  (click)="selectEmoji(e)"
+                  class="w-10 h-10 flex items-center justify-center text-xl rounded-xl transition-all duration-200 hover:scale-110 active:scale-95 border-2"
+                  [class]="billForm.get('emoji')?.value === e 
+                    ? 'bg-orange-100 border-orange-400 dark:bg-orange-900/40 dark:border-orange-500' 
+                    : 'bg-white dark:bg-slate-800 border-transparent hover:border-slate-300 dark:hover:border-slate-600'"
+                >
+                  {{ e }}
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-col gap-2">
             <label for="amount" class="font-semibold text-slate-700 dark:text-slate-200">
               Amount (THB) <span class="text-red-500">*</span>
             </label>
+            
+            <!-- Quick Amount Selection -->
+            <div class="flex flex-wrap gap-2 mb-2">
+              @for (amt of quickAmounts; track amt) {
+                <button
+                  type="button"
+                  (click)="setAmount(amt)"
+                  class="px-3 py-1.5 text-sm font-bold rounded-xl border transition-all active:scale-95"
+                  [class]="billForm.get('amount')?.value === amt
+                    ? 'bg-orange-500 border-orange-500 text-white shadow-md shadow-orange-500/30'
+                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-orange-300'"
+                >
+                  ฿{{ amt }}
+                </button>
+              }
+            </div>
+
             <p-inputNumber
               inputId="amount"
               formControlName="amount"
@@ -188,7 +234,7 @@ import { LiffService } from '../../services/liff.service';
               [minFractionDigits]="2"
               [maxFractionDigits]="2"
               styleClass="w-full"
-              inputStyleClass="w-full"
+              inputStyleClass="w-full !rounded-xl"
             ></p-inputNumber>
           </div>
         </div>
@@ -235,6 +281,13 @@ export class LedgerComponent {
   isSaving = signal(false);
   isLoading = signal(true);
   bills = signal<DebtBill[]>([]);
+  isEmojiPickerOpen = signal(false);
+  emojis = [
+    '💸', '🍽️', '🚕', '🏠', '🛍️', '🎮', '🍻', '🐱', '☕', '🎁', '⛽', '🍿',
+    '🍕', '🍔', '🍦', '🚲', '🎬', '🎤', '🏀', '💼', '✈️', '🛀', '💊', '📚',
+    '⚡', '🔌', '💧', '📶', '🛒', '🎟️', '🏥', '🔨', '🧹', '🧼', '🌱', '🍎'
+  ];
+  quickAmounts = [50, 100, 300, 500, 1000];
 
   billForm = this.fb.group({
     name: ['', Validators.required],
@@ -254,6 +307,19 @@ export class LedgerComponent {
         this.isLoading.set(false);
       },
     });
+  }
+
+  selectEmoji(emoji: string) {
+    this.billForm.patchValue({ emoji });
+    this.isEmojiPickerOpen.set(false);
+  }
+
+  setAmount(amount: number) {
+    this.billForm.patchValue({ amount });
+  }
+
+  toggleEmojiPicker() {
+    this.isEmojiPickerOpen.update(v => !v);
   }
 
   showAddDialog(): void {
