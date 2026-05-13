@@ -8,6 +8,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { CommonModule } from '@angular/common';
 import { LedgerService, DebtBill } from '../../services/ledger.service';
+import { LiffService } from '../../services/liff.service';
 
 @Component({
   selector: 'app-ledger',
@@ -181,6 +182,7 @@ import { LedgerService, DebtBill } from '../../services/ledger.service';
 export class LedgerComponent {
   private fb = inject(FormBuilder);
   private ledgerService = inject(LedgerService);
+  private liffService = inject(LiffService);
 
   isDialogVisible = signal(false);
   isSaving = signal(false);
@@ -218,16 +220,23 @@ export class LedgerComponent {
     this.isSaving.set(true);
     const { name, emoji, amount, note } = this.billForm.value;
 
+    const bill: Omit<DebtBill, 'id'> = {
+      name: name!,
+      emoji: emoji || '💸',
+      amount: amount!,
+      date: new Date(),
+      status: 'PENDING',
+      note: note || undefined,
+    };
+
     try {
-      await this.ledgerService.addBill({
-        name: name!,
-        emoji: emoji || '💸',
-        amount: amount!,
-        date: new Date(),
-        status: 'PENDING',
-        note: note || undefined,
-      });
+      await this.ledgerService.addBill(bill);
       this.isDialogVisible.set(false);
+
+      // After saving, open LINE shareTargetPicker to notify the debtor.
+      // This is a best-effort action — if the user is not inside the LINE
+      // client or the picker is closed, we simply continue.
+      await this.liffService.shareToDebtor(bill);
     } catch (err) {
       console.error('Failed to save bill:', err);
     } finally {
