@@ -22,7 +22,7 @@ interface DebtBill {
   imports: [CardModule, ButtonModule, AvatarModule, CommonModule],
   template: `
     <div class="p-4 sm:p-8 md:p-12 w-full max-w-4xl mx-auto font-sans">
-      <div class="flex justify-between items-center mb-6">
+      <div class="sticky top-0 z-40 flex justify-between items-center mb-6 py-4 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 -mx-4 px-4 sm:-mx-8 sm:px-8 md:-mx-12 md:px-12 shadow-sm">
         <h2
           class="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight"
         >
