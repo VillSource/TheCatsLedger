@@ -80,7 +80,7 @@ export class LiffService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const flexMessage: any = {
       type: 'flex',
-      altText: `${senderName} is requesting ${amountFormatted} for "${bill.name}"`,
+      altText: `อย่าลิมจ่ายค่า "${bill.name}" ${amountFormatted}`,
       contents: {
         type: 'bubble',
         size: 'kilo',
@@ -200,7 +200,7 @@ export class LiffService {
 
     const message: any = {
       type: 'bubble',
-      altText: `${senderName} is requesting ${amountFormatted} for "${bill.name}"`,
+      altText: `อย่าลิมจ่ายค่า "${bill.name}" ${amountFormatted}`,
       body: {
         type: 'box',
         layout: 'vertical',
