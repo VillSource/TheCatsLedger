@@ -111,11 +111,20 @@ export class LedgerService {
       return;
     }
 
+    if (!this.liffService.profile()) {
+      console.error('No user profile');
+      return;
+    }
+
+    const userId = this.liffService.profile()!.userId;
+    const displayName = this.liffService.profile()?.displayName;
+    const pictureUrl = this.liffService.profile()?.pictureUrl;
+
     updateDoc(docRef, {
       debtors: {
-        [this.liffService.profile()!.userId]: {
-          avatar: this.liffService.profile()?.pictureUrl,
-          name: this.liffService.profile()?.displayName,
+        [userId]: {
+          avatar: pictureUrl,
+          name: displayName,
         },
       },
     });
