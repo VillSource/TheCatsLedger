@@ -12,7 +12,7 @@ export interface LiffProfile {
   providedIn: 'root',
 })
 export class LiffService {
-  private readonly liffId = '2010005263-lb7PgLvF'; // The user will need to replace this
+  private readonly liffId = '2010004068-6xxCwjXN'; // The user will need to replace this
 
   profile = signal<LiffProfile | null>(null);
   error = signal<string | null>(null);
