@@ -36,6 +36,10 @@ export class LiffService {
         if (liff.isInClient()) {
           liff.login();
         } else {
+          liff.openWindow({
+            url: window.location.href,
+            external: true,
+          });
           this.isLoggedIn.set(false);
         }
       }
