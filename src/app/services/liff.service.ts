@@ -80,7 +80,7 @@ export class LiffService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const flexMessage: any = {
       type: 'flex',
-      altText: `อย่าลิมจ่ายค่า "${bill.name}" ${amountFormatted}`,
+      altText: `อย่าลิมจ่ายค่า "${bill.name}" ${amountFormatted} นะ`,
       contents: {
         type: 'bubble',
         size: 'kilo',
@@ -200,7 +200,7 @@ export class LiffService {
 
     const message: any = {
       type: 'bubble',
-      altText: `อย่าลิมจ่ายค่า "${bill.name}" ${amountFormatted}`,
+      size: 'giga',
       body: {
         type: 'box',
         layout: 'vertical',
@@ -325,8 +325,10 @@ export class LiffService {
       },
     };
 
+    flexMessage.contents = message;
+
     try {
-      const result = await liff.shareTargetPicker([message]);
+      const result = await liff.shareTargetPicker([flexMessage]);
       return result !== undefined && result !== null;
     } catch (err) {
       console.error('shareTargetPicker failed:', err);
