@@ -1,4 +1,11 @@
-import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+  AfterViewInit,
+} from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { LedgerService, DebtBill } from '../../services/ledger.service';
@@ -109,18 +116,20 @@ import { DividerModule } from 'primeng/divider';
               Debtor Info
             </h3>
             <div class="flex items-center gap-3">
-              @if (b.debtorAvatar) {
-                <img [src]="b.debtorAvatar" class="w-10 h-10 rounded-full" alt="avatar" />
-              } @else {
-                <div
-                  class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center"
-                >
-                  <i class="pi pi-user text-slate-400"></i>
-                </div>
+              @for (debtor of b.debtors | keyvalue; track debtor.key) {
+                @if (debtor.value.avatar) {
+                  <img [src]="debtor.value.avatar" class="w-10 h-10 rounded-full" alt="avatar" />
+                } @else {
+                  <div
+                    class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center"
+                  >
+                    <i class="pi pi-user text-slate-400"></i>
+                  </div>
+                }
+                <span class="text-slate-900 dark:text-white font-medium">
+                  {{ debtor.value.name || 'Unknown Debtor' }}
+                </span>
               }
-              <span class="text-slate-900 dark:text-white font-medium">
-                {{ b.debtorName || 'Unknown Debtor' }}
-              </span>
             </div>
           </div>
 
@@ -151,7 +160,7 @@ import { DividerModule } from 'primeng/divider';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BillDetailComponent implements OnInit {
+export class BillDetailComponent implements OnInit, AfterViewInit {
   private route = inject(ActivatedRoute);
   private ledgerService = inject(LedgerService);
 
@@ -169,5 +178,11 @@ export class BillDetailComponent implements OnInit {
       }
     }
     this.isLoading.set(false);
+  }
+
+  async ngAfterViewInit() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return;
+    await this.ledgerService.addDebtorToBills(id);
   }
 }

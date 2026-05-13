@@ -12,18 +12,18 @@ import {
   getDoc,
   Timestamp,
   type Firestore,
+  updateDoc,
 } from 'firebase/firestore';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { LiffService } from './liff.service';
 
 export interface DebtBill {
   id?: string;
   creditorId?: string;
   creditorName?: string;
   creditorAvatar?: string;
-  debtorId?: string;
-  debtorName?: string;
-  debtorAvatar?: string;
+  debtors?: { [key: string]: { avatar: string; name: string } };
   name: string;
   emoji: string;
   note?: string;
@@ -37,6 +37,7 @@ export interface DebtBill {
 })
 export class LedgerService {
   private db: Firestore;
+  private liffService = inject(LiffService);
 
   constructor() {
     // inject(FirebaseApp) triggers Angular Fire's provideFirebaseApp factory,
@@ -65,8 +66,12 @@ export class LedgerService {
               amount: data['amount'] as number,
               date: (data['date'] as Timestamp).toDate(),
               status: data['status'] as 'PENDING' | 'PAID',
-              debtorName: data['debtorName'] as string | undefined,
-              debtorAvatar: data['debtorAvatar'] as string | undefined,
+              creditorId: data['creditorId'] as string | undefined,
+              creditorName: data['creditorName'] as string | undefined,
+              creditorAvatar: data['creditorAvatar'] as string | undefined,
+              debtors: data['debtors'] as
+                | { [key: string]: { avatar: string; name: string } }
+                | undefined,
             };
           });
           subscriber.next(bills);
@@ -93,6 +98,24 @@ export class LedgerService {
     return docRef.id;
   }
 
+  async addDebtorToBills(billId: string) {
+    const docRef = doc(this.db, `bills/${billId}`);
+    const bill = await getDoc(docRef);
+
+    if (bill?.exists() && bill.data()['creditorId'] === this.liffService.profile()?.userId) {
+      return;
+    }
+
+    updateDoc(docRef, {
+      debtors: {
+        [this.liffService.profile()!.userId]: {
+          avatar: this.liffService.profile()?.pictureUrl,
+          name: this.liffService.profile()?.displayName,
+        },
+      },
+    });
+  }
+
   async getBill(id: string): Promise<DebtBill | null> {
     const docRef = doc(this.db, 'bills', id);
     const docSnap = await getDoc(docRef);
@@ -105,9 +128,7 @@ export class LedgerService {
         creditorAvatar: data['creditorAvatar'] as string | undefined,
         creditorName: data['creditorName'] as string | undefined,
         creditorId: data['creditorId'] as string | undefined,
-        debtorAvatar: data['debtorAvatar'] as string | undefined,
-        debtorName: data['debtorName'] as string | undefined,
-        debtorId: data['debtorId'] as string | undefined,
+        debtors: data['debtors'] as { [key: string]: { avatar: string; name: string } },
         emoji: data['emoji'] as string,
         note: data['note'] as string | undefined,
         amount: data['amount'] as number,

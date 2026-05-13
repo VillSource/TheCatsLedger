@@ -73,23 +73,23 @@ import { LiffService } from '../../services/liff.service';
                         <span class="mx-1">•</span> {{ bill.note }}
                       }
                     </p>
-                    @if (bill.debtorName) {
+                    @for (debtor of bill.debtors | keyvalue; track debtor.key) {
                       <div class="flex items-center gap-1.5 mt-1">
-                        @if (bill.debtorAvatar) {
+                        @if (debtor.value.avatar) {
                           <p-avatar
-                            [image]="bill.debtorAvatar"
+                            [image]="debtor.value.avatar"
                             shape="circle"
                             styleClass="!w-5 !h-5"
                           ></p-avatar>
                         } @else {
                           <p-avatar
-                            [label]="bill.debtorName.charAt(0)"
+                            [label]="debtor.value.name.charAt(0)"
                             shape="circle"
                             styleClass="!w-5 !h-5 !text-[10px] font-bold !bg-sky-100 !text-sky-700 dark:!bg-sky-900/50 dark:!text-sky-300"
                           ></p-avatar>
                         }
                         <span class="text-xs font-semibold text-sky-600 dark:text-sky-400"
-                          >Owed by: {{ bill.debtorName }}</span
+                          >Owed by: {{ debtor.value.name }}</span
                         >
                       </div>
                     }
