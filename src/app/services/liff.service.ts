@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import liff from '@line/liff';
+import { environment } from '../../environments/environment';
 import type { DebtBill } from './ledger.service';
 
 export interface LiffProfile {
@@ -13,7 +14,7 @@ export interface LiffProfile {
   providedIn: 'root',
 })
 export class LiffService {
-  private readonly liffId = '2010005263-lb7PgLvF';
+  private readonly liffId = environment.liffId;
 
   profile = signal<LiffProfile | null>(null);
   error = signal<string | null>(null);

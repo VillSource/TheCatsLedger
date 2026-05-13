@@ -1,6 +1,6 @@
 export const environment = {
-  production: true,
-  liffId: '2010004068-6xxCwjXN',
+  production: false,
+  liffId: '2010004067-aIM42kCa', // Set your development LIFF ID here
   firebase: {
     apiKey: 'AIzaSyD-qwLLvsy_673OGavwaziJdS7WY9R_5jA',
     authDomain: 'the-cat-s-ledger.firebaseapp.com',

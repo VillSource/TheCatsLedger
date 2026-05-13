@@ -3,10 +3,11 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { LedgerComponent } from './components/ledger/ledger.component';
 import { LiffService } from './services/liff.service';
 import { ButtonModule } from 'primeng/button';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
-  imports: [LedgerComponent, ButtonModule],
+  imports: [LedgerComponent, ButtonModule, ProfileComponent],
   template: `
     <main
       class="relative min-h-screen pb-24 bg-slate-50 dark:bg-slate-950 transition-colors duration-300"
@@ -25,14 +26,20 @@ import { ButtonModule } from 'primeng/button';
       </div>
 
       <!-- <app-profile /> -->
-      <app-ledger />
+      @if (!liffService.isInClient() && !liffService.isLoggedIn()) {
+        <app-profile />
+      } @else {
+        <app-ledger />
+      }
     </main>
   `,
   styleUrl: './app.css',
 })
 export class App implements OnInit {
-  private readonly liffService = inject(LiffService);
+  public readonly liffService = inject(LiffService);
   isDark = signal<boolean>(false);
+
+  x = environment.production;
 
   ngOnInit() {
     this.liffService.init();
