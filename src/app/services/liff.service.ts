@@ -221,7 +221,7 @@ export class LiffService {
           },
           {
             type: 'text',
-            text: `Note: ${bill.note} || '-'`,
+            text: `Note: ${bill.note || '-'}`,
             size: 'xs',
             color: '#aaaaaa',
             wrap: true,
