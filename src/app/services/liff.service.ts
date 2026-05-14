@@ -340,4 +340,155 @@ export class LiffService {
       return false;
     }
   }
+
+  /**
+   * Sends a flex message back to the chat room where the LIFF is opened.
+   * This works only when LIFF is opened in a chat room context.
+   */
+  async sendPaymentNotification(bill: DebtBill): Promise<boolean> {
+    if (!liff.isInClient()) return false;
+
+    const context = liff.getContext();
+    if (!context || !['utou', 'room', 'group', 'square_chat'].includes(context.type)) {
+      console.warn('sendMessages is only available in chat context');
+      return false;
+    }
+
+    const amountFormatted = new Intl.NumberFormat('th-TH', {
+      style: 'currency',
+      currency: 'THB',
+      minimumFractionDigits: 2,
+    }).format(bill.amount);
+
+    const senderName = this.profile()?.displayName ?? 'Someone';
+
+    const flexMessage: any = {
+      type: 'flex',
+      altText: `โอนค่า "${bill.name}" ให้แล้วนะ!`,
+      contents: {
+        type: 'bubble',
+        header: {
+          type: 'box',
+          layout: 'vertical',
+          backgroundColor: '#1DB446',
+          contents: [
+            {
+              type: 'text',
+              text: '💸 แจ้งโอนเงินแล้ว',
+              color: '#FFFFFF',
+              weight: 'bold',
+              size: 'md',
+            },
+          ],
+          paddingAll: '12px',
+        },
+        body: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'text',
+              text: `${bill.emoji} ${bill.name}`,
+              weight: 'bold',
+              size: 'xl',
+            },
+            {
+              type: 'box',
+              layout: 'vertical',
+              margin: 'lg',
+              spacing: 'sm',
+              contents: [
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: 'ยอดเงิน',
+                      size: 'sm',
+                      color: '#666666',
+                    },
+                    {
+                      type: 'text',
+                      text: amountFormatted,
+                      size: 'sm',
+                      weight: 'bold',
+                      align: 'end',
+                    },
+                  ],
+                },
+                {
+                  type: 'box',
+                  layout: 'horizontal',
+                  contents: [
+                    {
+                      type: 'text',
+                      text: 'ผู้จ่าย',
+                      size: 'sm',
+                      color: '#666666',
+                    },
+                    {
+                      type: 'text',
+                      text: senderName,
+                      size: 'sm',
+                      weight: 'bold',
+                      align: 'end',
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              type: 'box',
+              layout: 'vertical',
+              margin: 'xl',
+              backgroundColor: '#F0F9F1',
+              paddingAll: '10px',
+              cornerRadius: 'md',
+              contents: [
+                {
+                  type: 'text',
+                  text: '⌛ กำลังรอเจ้าหนี้ตรวจสอบ',
+                  size: 'xs',
+                  color: '#1DB446',
+                  align: 'center',
+                  weight: 'bold',
+                },
+              ],
+            },
+          ],
+          paddingAll: '16px',
+        },
+        footer: {
+          type: 'box',
+          layout: 'vertical',
+          contents: [
+            {
+              type: 'button',
+              action: {
+                type: 'uri',
+                label: 'ดูรายละเอียดบิล',
+                uri: `https://miniapp.line.me/${environment.liffId}/bill/${bill.id}`,
+              },
+              height: 'sm',
+              style: 'link',
+              color: '#1DB446',
+            },
+          ],
+        },
+      },
+    };
+
+    try {
+      await liff.sendMessages([flexMessage]);
+      return true;
+    } catch (err) {
+      console.error('sendMessages failed:', err);
+      return false;
+    }
+  }
+
+  getContext() {
+    return liff.getContext();
+  }
 }

@@ -188,6 +188,14 @@ import { THAI_BANKS } from '../../constants/banks';
                 styleClass="w-full rounded-xl! font-bold bg-orange-500! border-orange-500! hover:bg-orange-600! hover:border-orange-600!"
                 [disabled]="b.status === 'PAID'"
               ></p-button>
+            } @else if (isDebtor() && isInChat()) {
+              <p-button
+                label="Notify Creditor"
+                icon="pi pi-bell"
+                styleClass="w-full rounded-xl! font-bold bg-green-500! border-green-500! hover:bg-green-600! hover:border-green-600!"
+                [disabled]="b.status === 'PAID'"
+                (click)="notifyPaid()"
+              ></p-button>
             }
           </div>
         </p-card>
@@ -255,5 +263,26 @@ export class BillDetailComponent implements OnInit, AfterViewInit {
 
   getBankLogo(name: string): string {
     return THAI_BANKS.find((b) => b.name === name)?.logo || '';
+  }
+
+  isDebtor(): boolean {
+    const profile = this.userProfile();
+    const bill = this.bill();
+    if (!profile || !bill || !bill.debtors) return false;
+    return !!bill.debtors[profile.userId];
+  }
+
+  isInChat(): boolean {
+    const context = this.liffService.getContext();
+    return !!context && ['utou', 'room', 'group', 'square_chat'].includes(context.type);
+  }
+
+  async notifyPaid() {
+    const bill = this.bill();
+    if (!bill) return;
+    const success = await this.liffService.sendPaymentNotification(bill);
+    if (success) {
+      // Optional: Show success toast or feedback
+    }
   }
 }
