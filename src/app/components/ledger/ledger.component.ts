@@ -36,7 +36,8 @@ import { LiffService } from '../../services/liff.service';
         <h2
           class="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight"
         >
-          Your Ledger
+          <span class="hidden sm:inline">The Cat's Ledger</span>
+          <span class="sm:hidden text-3xl">😼</span>
         </h2>
         <div class="flex items-center gap-2">
           <p-button
