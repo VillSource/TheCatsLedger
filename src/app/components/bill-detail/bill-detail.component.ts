@@ -13,7 +13,7 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
-import { LiffService } from '../../services/liff.service';
+import { LiffProfile, LiffService } from '../../services/liff.service';
 
 @Component({
   selector: 'app-bill-detail',
@@ -135,7 +135,7 @@ import { LiffService } from '../../services/liff.service';
           </div>
 
           <div class="mt-8 flex gap-3">
-            @if (isCreditor()) {
+            @if (bill()?.creditorId === userProfile()?.userId) {
               <p-button
                 label="Share Again"
                 icon="pi pi-share-alt"
@@ -171,7 +171,7 @@ export class BillDetailComponent implements OnInit, AfterViewInit {
 
   bill = signal<DebtBill | null>(null);
   isLoading = signal(true);
-  isCreditor = signal<boolean>(false);
+  userProfile = signal<LiffProfile | null>(null);
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -187,11 +187,8 @@ export class BillDetailComponent implements OnInit, AfterViewInit {
   }
 
   async ngAfterViewInit() {
-    console.log('bill creditor id', this.bill()?.creditorId);
-    console.log('liff user id', this.liffService.profile()?.userId);
-    this.isCreditor.set(this.bill()?.creditorId === this.liffService.profile()?.userId);
+    this.userProfile.set(this.liffService.profile());
     const id = this.route.snapshot.paramMap.get('id');
-    console.log('bill detail id', id);
     if (!id) return;
     await this.ledgerService.addDebtorToBills(id);
   }
