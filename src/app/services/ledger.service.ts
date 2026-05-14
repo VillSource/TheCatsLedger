@@ -75,9 +75,7 @@ export class LedgerService {
               const debtorName = (debtorData['name'] ?? 'Unknown') as string;
               debtors[d.id] = {
                 name: debtorName,
-                avatar:
-                  (debtorData['avatar'] as string | undefined) ??
-                  `https://api.dicebear.com/7.x/initials/svg?seed=${debtorName}`,
+                avatar: (debtorData['avatar'] as string | undefined) ?? ``,
               };
             });
 
@@ -142,7 +140,7 @@ export class LedgerService {
     const debtorDocRef = doc(this.db, `bills/${billId}/debtors`, userId);
 
     await setDoc(debtorDocRef, {
-      avatar: pictureUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${displayName}`,
+      avatar: pictureUrl || ``,
       name: displayName || 'Unknown',
       joinedAt: Timestamp.now(),
     });
