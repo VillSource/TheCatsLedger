@@ -479,6 +479,16 @@ export class LiffService {
       },
     };
 
+    flexMessage.contents.hero = {
+      type: 'image',
+      url: 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjdqNHFvcnpkcHhkODI1aWJhaHZkZmI1YWNvZ3FhY2k0emQ4Y3c3biZlcD12MV9naWZzX3NlYXJjaCZjdD1n/sDcfxFDozb3bO/giphy.gif',
+      aspectMode: 'fit',
+      size: 'full',
+      aspectRatio: '16:8.97',
+      gravity: 'top',
+      align: 'center',
+    };
+
     try {
       await liff.sendMessages([flexMessage]);
       liff.closeWindow();
