@@ -187,6 +187,8 @@ export class BillDetailComponent implements OnInit, AfterViewInit {
   }
 
   async ngAfterViewInit() {
+    console.log('bill creditor id', this.bill()?.creditorId);
+    console.log('liff user id', this.liffService.profile()?.userId);
     this.isCreditor.set(this.bill()?.creditorId === this.liffService.profile()?.userId);
     const id = this.route.snapshot.paramMap.get('id');
     console.log('bill detail id', id);
