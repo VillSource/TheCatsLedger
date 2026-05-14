@@ -47,6 +47,15 @@ import { LiffService } from '../../services/liff.service';
             tooltipPosition="bottom"
           ></p-button>
           <p-button
+            icon="pi pi-wallet"
+            [rounded]="true"
+            [text]="true"
+            severity="secondary"
+            routerLink="/bills-to-pay"
+            pTooltip="Bills to Pay"
+            tooltipPosition="bottom"
+          ></p-button>
+          <p-button
             label="New Bill"
             icon="pi pi-plus"
             styleClass="rounded-xl! font-bold shadow-md!"

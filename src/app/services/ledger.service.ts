@@ -16,6 +16,7 @@ import {
   where,
   setDoc,
   getDocs,
+  collectionGroup,
 } from 'firebase/firestore';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -149,6 +150,7 @@ export class LedgerService {
     const debtorDocRef = doc(this.db, `bills/${billId}/debtors`, userId);
 
     await setDoc(debtorDocRef, {
+      userId,
       avatar: pictureUrl || ``,
       name: displayName || 'Unknown',
       joinedAt: Timestamp.now(),
@@ -188,6 +190,30 @@ export class LedgerService {
       };
     }
     return null;
+  }
+
+  getDebtorBills(userId: string): Observable<DebtBill[]> {
+    return new Observable<DebtBill[]>((subscriber) => {
+      const q = query(collectionGroup(this.db, 'debtors'), where('userId', '==', userId));
+
+      const unsubscribe = onSnapshot(
+        q,
+        async (snapshot) => {
+          const billPromises = snapshot.docs.map(async (debtorDoc) => {
+            const billRef = debtorDoc.ref.parent.parent;
+            if (!billRef) return null;
+            return this.getBill(billRef.id);
+          });
+
+          const results = await Promise.all(billPromises);
+          const bills = results.filter((b): b is DebtBill => b !== null);
+          subscriber.next(bills);
+        },
+        (error) => subscriber.error(error),
+      );
+
+      return () => unsubscribe();
+    });
   }
 
   async savePaymentInfo(info: Omit<UserPaymentInfo, 'updatedAt'>): Promise<void> {
