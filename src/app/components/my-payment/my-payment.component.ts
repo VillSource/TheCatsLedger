@@ -53,7 +53,7 @@ import { THAI_BANKS } from '../../constants/banks';
           <!-- PromptPay Section -->
           <div class="flex flex-col gap-3">
             <label for="promptPay" class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
-              <i class="pi pi-mobile text-orange-500"></i>
+              <img src="https://raw.githubusercontent.com/casperstack/thai-banks-logo/master/icons/PromptPay.png" class="h-6 object-contain" alt="PromptPay" />
               PromptPay Number
             </label>
             <input

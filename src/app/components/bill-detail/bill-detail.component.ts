@@ -122,7 +122,10 @@ import { THAI_BANKS } from '../../constants/banks';
               <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-2xl border border-orange-100 dark:border-orange-800/30 flex flex-col gap-3">
                 @if (p.promptPay) {
                   <div class="flex items-center justify-between">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">PromptPay</span>
+                    <div class="flex items-center gap-2">
+                      <img src="https://raw.githubusercontent.com/casperstack/thai-banks-logo/master/icons/PromptPay.png" class="h-4 object-contain" alt="PromptPay" />
+                      <span class="text-sm text-slate-500 dark:text-slate-400">PromptPay</span>
+                    </div>
                     <span class="font-bold text-slate-800 dark:text-slate-100">{{ p.promptPay }}</span>
                   </div>
                 }
