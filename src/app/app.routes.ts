@@ -11,5 +11,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/bill-detail/bill-detail.component').then((m) => m.BillDetailComponent),
   },
+  {
+    path: 'my-payment',
+    loadComponent: () =>
+      import('./components/my-payment/my-payment.component').then((m) => m.MyPaymentComponent),
+  },
   { path: '**', redirectTo: '' },
 ];

@@ -8,6 +8,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { TooltipModule } from 'primeng/tooltip';
 import { LedgerService, DebtBill } from '../../services/ledger.service';
 import { LiffService } from '../../services/liff.service';
 
@@ -23,6 +24,7 @@ import { LiffService } from '../../services/liff.service';
     ReactiveFormsModule,
     CommonModule,
     RouterLink,
+    TooltipModule,
   ],
   template: `
     <div class="p-4 sm:p-8 md:p-12 w-full max-w-4xl mx-auto font-sans">
@@ -34,12 +36,23 @@ import { LiffService } from '../../services/liff.service';
         >
           Your Ledger
         </h2>
-        <p-button
-          label="New Bill"
-          icon="pi pi-plus"
-          styleClass="!rounded-xl font-bold !shadow-md"
-          (onClick)="showAddDialog()"
-        ></p-button>
+        <div class="flex items-center gap-2">
+          <p-button
+            icon="pi pi-credit-card"
+            [rounded]="true"
+            [text]="true"
+            severity="secondary"
+            routerLink="/my-payment"
+            pTooltip="My Payment Info"
+            tooltipPosition="bottom"
+          ></p-button>
+          <p-button
+            label="New Bill"
+            icon="pi pi-plus"
+            styleClass="rounded-xl! font-bold shadow-md!"
+            (onClick)="showAddDialog()"
+          ></p-button>
+        </div>
       </div>
 
       <div class="flex flex-col gap-4">

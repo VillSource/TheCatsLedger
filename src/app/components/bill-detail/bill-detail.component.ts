@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { LedgerService, DebtBill } from '../../services/ledger.service';
+import { LedgerService, DebtBill, UserPaymentInfo } from '../../services/ledger.service';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
@@ -112,6 +112,35 @@ import { LiffProfile, LiffService } from '../../services/liff.service';
             </div>
           </div>
 
+          @if (paymentInfo(); as p) {
+            <p-divider></p-divider>
+            <div class="py-4 flex flex-col gap-4">
+              <h3 class="text-sm text-slate-500 uppercase tracking-wider font-semibold">
+                Payment Details
+              </h3>
+              <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-2xl border border-orange-100 dark:border-orange-800/30 flex flex-col gap-3">
+                @if (p.promptPay) {
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-slate-500 dark:text-slate-400">PromptPay</span>
+                    <span class="font-bold text-slate-800 dark:text-slate-100">{{ p.promptPay }}</span>
+                  </div>
+                }
+                @if (p.bankName) {
+                  <div class="flex flex-col gap-1">
+                    <span class="text-xs text-slate-500 dark:text-slate-400">Bank Transfer</span>
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-slate-800 dark:text-slate-100">{{ p.bankName }}</span>
+                      <span class="text-slate-700 dark:text-slate-200">{{ p.accountNumber }}</span>
+                    </div>
+                    @if (p.accountName) {
+                      <span class="text-xs text-slate-500 dark:text-slate-400 mt-1 italic">{{ p.accountName }}</span>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
           <div class="py-4 flex flex-col gap-4">
             <h3 class="text-sm text-slate-500 uppercase tracking-wider font-semibold">
               Debtor Info
@@ -170,6 +199,7 @@ export class BillDetailComponent implements OnInit, AfterViewInit {
   private liffService = inject(LiffService);
 
   bill = signal<DebtBill | null>(null);
+  paymentInfo = signal<UserPaymentInfo | null>(null);
   isLoading = signal(true);
   userProfile = signal<LiffProfile | null>(null);
 
@@ -179,6 +209,11 @@ export class BillDetailComponent implements OnInit, AfterViewInit {
       try {
         const result = await this.ledgerService.getBill(id);
         this.bill.set(result);
+
+        if (result?.creditorId) {
+          const info = await this.ledgerService.getPaymentInfo(result.creditorId);
+          this.paymentInfo.set(info);
+        }
       } catch (err) {
         console.error('Error fetching bill:', err);
       }

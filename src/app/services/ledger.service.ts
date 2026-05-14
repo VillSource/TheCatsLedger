@@ -35,6 +35,15 @@ export interface DebtBill {
   status: 'PENDING' | 'PAID';
 }
 
+export interface UserPaymentInfo {
+  userId: string;
+  promptPay?: string;
+  bankName?: string;
+  accountNumber?: string;
+  accountName?: string;
+  updatedAt: Date;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -176,6 +185,32 @@ export class LedgerService {
         amount: data['amount'] as number,
         date: (data['date'] as Timestamp).toDate(),
         status: data['status'] as 'PENDING' | 'PAID',
+      };
+    }
+    return null;
+  }
+
+  async savePaymentInfo(info: Omit<UserPaymentInfo, 'updatedAt'>): Promise<void> {
+    const docRef = doc(this.db, 'paymentInfo', info.userId);
+    await setDoc(docRef, {
+      ...Object.fromEntries(Object.entries(info).filter(([_, value]) => value !== undefined)),
+      updatedAt: Timestamp.now(),
+    });
+  }
+
+  async getPaymentInfo(userId: string): Promise<UserPaymentInfo | null> {
+    const docRef = doc(this.db, 'paymentInfo', userId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      return {
+        userId: data['userId'] as string,
+        promptPay: data['promptPay'] as string | undefined,
+        bankName: data['bankName'] as string | undefined,
+        accountNumber: data['accountNumber'] as string | undefined,
+        accountName: data['accountName'] as string | undefined,
+        updatedAt: (data['updatedAt'] as Timestamp).toDate(),
       };
     }
     return null;
