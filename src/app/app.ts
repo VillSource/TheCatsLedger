@@ -14,7 +14,7 @@ import { environment } from '../environments/environment';
       <app-loading />
     } @else {
       <main
-        class="relative min-h-screen pb-24 bg-slate-50 dark:bg-slate-950 transition-colors duration-300"
+        class="relative min-h-screen pb-0 bg-slate-50 dark:bg-slate-950 transition-colors duration-300"
       >
         <!-- Fixed Theme Toggle Button -->
         <div class="fixed bottom-4 left-4 z-50">

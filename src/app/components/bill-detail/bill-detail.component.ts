@@ -30,7 +30,7 @@ import { THAI_BANKS } from '../../constants/banks';
     DatePipe,
   ],
   template: `
-    <div class="p-4 max-w-2xl mx-auto">
+    <div class="p-4 pb-8 max-w-2xl mx-auto">
       <!-- <div class="mb-4">
         <p-button icon="pi pi-chevron-left" label="Back" [text]="true" routerLink="/"></p-button>
       </div> -->
@@ -190,7 +190,7 @@ import { THAI_BANKS } from '../../constants/banks';
           </div>
         </p-card>
 
-        <div class="mt-6 flex justify-center items-center gap-3">
+        <div class="mt-4 flex justify-center items-center gap-3">
           <a routerLink="/" class="text-[10px] text-slate-400 hover:text-orange-500 transition-colors uppercase font-bold tracking-widest">
             My Ledger
           </a>
