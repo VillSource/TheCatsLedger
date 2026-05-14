@@ -189,6 +189,16 @@ import { THAI_BANKS } from '../../constants/banks';
             }
           </div>
         </p-card>
+
+        <div class="mt-6 flex justify-center items-center gap-3">
+          <a routerLink="/" class="text-[10px] text-slate-400 hover:text-orange-500 transition-colors uppercase font-bold tracking-widest">
+            My Ledger
+          </a>
+          <span class="text-slate-300 dark:text-slate-700">|</span>
+          <a routerLink="/bills-to-pay" class="text-[10px] text-slate-400 hover:text-orange-500 transition-colors uppercase font-bold tracking-widest">
+            Bills to Pay
+          </a>
+        </div>
       } @else {
         <div class="text-center p-8 bg-white dark:bg-slate-900 rounded-2xl shadow-sm">
           <i class="pi pi-exclamation-circle text-4xl text-slate-300 mb-4 block"></i>
