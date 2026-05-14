@@ -15,7 +15,7 @@ import { CommonModule } from '@angular/common';
         <div class="absolute inset-0 rounded-full bg-orange-400/10 animate-ping delay-300"></div>
 
         <!-- Cat Icon / Spinner -->
-        <div class="relative bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-2xl ">
+        <div class="relative bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-2xl">
           <div class="text-6xl animate-bounce mb-2">🐱</div>
           <div class="flex gap-1 justify-center">
             <div class="w-2 h-2 rounded-full bg-orange-500 animate-bounce delay-75"></div>
