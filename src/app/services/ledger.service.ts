@@ -13,6 +13,7 @@ import {
   Timestamp,
   type Firestore,
   updateDoc,
+  where,
 } from 'firebase/firestore';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -51,7 +52,11 @@ export class LedgerService {
 
   getBills(): Observable<DebtBill[]> {
     return new Observable<DebtBill[]>((subscriber) => {
-      const billsQuery = query(collection(this.db, 'bills'), orderBy('date', 'desc'));
+      const billsQuery = query(
+        collection(this.db, 'bills'),
+        where('creditorId', '==', this.liffService.profile()?.userId),
+        orderBy('date', 'desc'),
+      );
 
       const unsubscribe = onSnapshot(
         billsQuery,
