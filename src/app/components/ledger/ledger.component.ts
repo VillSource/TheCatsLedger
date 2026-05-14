@@ -77,63 +77,55 @@ import { LiffService } from '../../services/liff.service';
           @for (bill of bills(); track bill.id) {
             <p-card
               [routerLink]="['/bill', bill.id]"
-              styleClass="!rounded-2xl !shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all active:scale-[0.98] cursor-pointer !bg-white/90 dark:!bg-slate-900/90 backdrop-blur-sm overflow-hidden"
+              styleClass="!rounded-3xl border border-slate-100 dark:border-slate-800/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 active:scale-[0.98] cursor-pointer !bg-white/80 dark:!bg-slate-900/80 backdrop-blur-xl overflow-hidden group shadow-lg shadow-slate-200/50 dark:shadow-none"
             >
-              <div
-                class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2 sm:px-4 py-1"
-              >
-                <!-- Bill Info -->
-                <div class="flex items-center gap-4">
-                  <div
-                    class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-2xl shadow-sm border border-slate-200 dark:border-slate-700"
-                  >
-                    {{ bill.emoji }}
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 truncate">
-                      {{ bill.name }}
-                    </h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 truncate">
-                      {{ bill.date | date: 'mediumDate' }}
-                      @if (bill.note) {
-                        <span class="mx-1">•</span> {{ bill.note }}
-                      }
-                    </p>
-                    @for (debtor of bill.debtors | keyvalue; track debtor.key) {
-                      <div class="flex items-center gap-1.5 mt-1">
-                        @if (debtor.value.avatar) {
-                          <p-avatar
-                            [image]="debtor.value.avatar"
-                            shape="circle"
-                            styleClass="!w-5 !h-5"
-                          ></p-avatar>
-                        } @else {
-                          <p-avatar
-                            [label]="debtor.value.name.charAt(0)"
-                            shape="circle"
-                            styleClass="!w-5 !h-5 !text-[10px] font-bold !bg-sky-100 !text-sky-700 dark:!bg-sky-900/50 dark:!text-sky-300"
-                          ></p-avatar>
-                        }
-                        <span class="text-xs font-semibold text-sky-600 dark:text-sky-400"
-                          >Bill for: {{ debtor.value.name }}</span
-                        >
-                      </div>
-                    }
-                  </div>
+              <div class="flex items-center gap-4 p-1">
+                <!-- Emoji Box -->
+                <div
+                  class="w-14 h-14 rounded-2xl bg-orange-50 dark:bg-orange-950/30 flex items-center justify-center text-3xl shadow-inner border border-orange-100/50 dark:border-orange-900/30 shrink-0 group-hover:scale-110 transition-transform duration-300"
+                >
+                  {{ bill.emoji }}
                 </div>
 
-                <!-- Amount & Status -->
-                <div class="flex items-center justify-between sm:justify-end gap-6 sm:w-1/3">
-                  <div class="text-right grow">
-                    <div class="text-xl font-bold text-slate-800 dark:text-slate-100">
-                      {{ bill.amount | currency: 'THB' : 'symbol-narrow' }}
+                <!-- Info Column -->
+                <div class="min-w-0 flex-1 flex flex-col gap-0.5">
+                  <div class="flex items-center justify-between">
+                    <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 truncate pr-2">
+                      {{ bill.name }}
+                    </h3>
+                    <div class="text-lg font-black text-slate-900 dark:text-white shrink-0">
+                      {{ bill.amount | currency: 'THB' : 'symbol-narrow' : '1.0-0' }}
                     </div>
+                  </div>
+
+                  <div class="flex items-center justify-between">
+                    <div class="flex flex-col gap-1">
+                      <p class="text-[11px] font-medium text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+                        <i class="pi pi-calendar text-[10px]"></i>
+                        {{ bill.date | date: 'mediumDate' }}
+                      </p>
+                      
+                      @for (debtor of bill.debtors | keyvalue; track debtor.key) {
+                        <div class="flex items-center gap-1.5">
+                          <p-avatar
+                            [image]="debtor.value.avatar"
+                            [label]="!debtor.value.avatar ? debtor.value.name.charAt(0) : ''"
+                            shape="circle"
+                            styleClass="!w-4 !h-4 !text-[8px] font-bold !bg-orange-100 !text-orange-700"
+                          ></p-avatar>
+                          <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400 truncate max-w-[100px]"
+                            >{{ debtor.value.name }}</span
+                          >
+                        </div>
+                      }
+                    </div>
+
                     <div
-                      class="text-xs font-semibold px-2 py-1 rounded-md inline-block mt-1 shadow-xs"
+                      class="text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter border shadow-sm shrink-0"
                       [class]="
                         bill.status === 'PAID'
-                          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800/50'
-                          : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border border-orange-200 dark:border-orange-800/50'
+                          ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/30'
+                          : 'bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800/30'
                       "
                     >
                       {{ bill.status }}

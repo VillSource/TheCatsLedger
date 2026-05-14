@@ -21,15 +21,15 @@ import { LiffService } from '../../services/liff.service';
     ButtonModule,
     ProgressSpinnerModule,
     CurrencyPipe,
-    DatePipe
+    DatePipe,
   ],
   template: `
     <div class="p-4 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div class="flex items-center gap-4 mb-6">
-        <p-button 
-          icon="pi pi-chevron-left" 
-          [rounded]="true" 
-          [text]="true" 
+        <p-button
+          icon="pi pi-chevron-left"
+          [rounded]="true"
+          [text]="true"
           severity="secondary"
           routerLink="/"
         ></p-button>
@@ -37,83 +37,94 @@ import { LiffService } from '../../services/liff.service';
       </div>
 
       <div class="flex flex-col gap-4">
-      @if (isLoading()) {
-        <div class="flex flex-col items-center justify-center p-12">
-          <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4"></p-progressSpinner>
-          <p class="text-slate-500 mt-4 font-medium animate-pulse">Loading bills...</p>
-        </div>
-      } @else if (bills().length === 0) {
-        <div class="text-center p-12 bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
-          <div class="text-6xl mb-4">🙌</div>
-          <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">All settled up!</h3>
-          <p class="text-slate-500 dark:text-slate-400">You don't have any bills to pay right now.</p>
-        </div>
-      } @else {
-        <div class="grid grid-cols-1 gap-4">
-          @for (bill of bills(); track bill.id) {
-            <p-card
-              [routerLink]="['/bill', bill.id]"
-              styleClass="!rounded-2xl !shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all active:scale-[0.98] cursor-pointer !bg-white/90 dark:!bg-slate-900/90 backdrop-blur-sm overflow-hidden"
-            >
-              <div
-                class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2 sm:px-4 py-1"
+        @if (isLoading()) {
+          <div class="flex flex-col items-center justify-center p-12">
+            <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4"></p-progressSpinner>
+            <p class="text-slate-500 mt-4 font-medium animate-pulse">Loading bills...</p>
+          </div>
+        } @else if (bills().length === 0) {
+          <div
+            class="text-center p-12 bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800"
+          >
+            <div class="text-6xl mb-4">🙌</div>
+            <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">
+              All settled up!
+            </h3>
+            <p class="text-slate-500 dark:text-slate-400">
+              You don't have any bills to pay right now.
+            </p>
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 gap-4">
+            @for (bill of bills(); track bill.id) {
+              <p-card
+                [routerLink]="['/bill', bill.id]"
+                styleClass="!rounded-3xl border border-slate-100 dark:border-slate-800/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 active:scale-[0.98] cursor-pointer !bg-white/80 dark:!bg-slate-900/80 backdrop-blur-xl overflow-hidden group shadow-lg shadow-slate-200/50 dark:shadow-none"
               >
-                <!-- Bill Info -->
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 p-1">
+                  <!-- Emoji Box -->
                   <div
-                    class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-2xl shadow-sm border border-slate-200 dark:border-slate-700"
+                    class="w-14 h-14 rounded-2xl bg-orange-50 dark:bg-orange-950/30 flex items-center justify-center text-3xl shadow-inner border border-orange-100/50 dark:border-orange-900/30 shrink-0 group-hover:scale-110 transition-transform duration-300"
                   >
                     {{ bill.emoji }}
                   </div>
-                  <div class="min-w-0 flex-1">
-                    <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 truncate">
-                      {{ bill.name }}
-                    </h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 truncate">
-                      {{ bill.date | date: 'mediumDate' }}
-                      @if (bill.note) {
-                        <span class="mx-1">•</span> {{ bill.note }}
-                      }
-                    </p>
-                    <div class="flex items-center gap-1.5 mt-1">
-                      <p-avatar
-                        [image]="bill.creditorAvatar"
-                        shape="circle"
-                        styleClass="!w-5 !h-5 border border-white dark:border-slate-900"
-                      ></p-avatar>
-                      <span class="text-xs font-semibold text-orange-600 dark:text-orange-400"
-                        >Owe to: {{ bill.creditorName }}</span
-                      >
-                    </div>
-                  </div>
-                </div>
 
-                <!-- Amount & Status -->
-                <div class="flex items-center justify-between sm:justify-end gap-6 sm:w-1/3">
-                  <div class="text-right grow">
-                    <div class="text-xl font-bold text-slate-800 dark:text-slate-100">
-                      {{ bill.amount | currency: 'THB' : 'symbol-narrow' }}
+                  <!-- Info Column -->
+                  <div class="min-w-0 flex-1 flex flex-col gap-0.5">
+                    <div class="flex items-center justify-between">
+                      <h3
+                        class="text-base font-bold text-slate-800 dark:text-slate-100 truncate pr-2"
+                      >
+                        {{ bill.name }}
+                      </h3>
+                      <div class="text-lg font-black text-slate-900 dark:text-white shrink-0">
+                        {{ bill.amount | currency: 'THB' : 'symbol-narrow' : '1.0-0' }}
+                      </div>
                     </div>
-                    <div
-                      class="text-xs font-semibold px-2 py-1 rounded-md inline-block mt-1 shadow-xs"
-                      [class]="
-                        bill.status === 'PAID'
-                          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800/50'
-                          : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border border-orange-200 dark:border-orange-800/50'
-                      "
-                    >
-                      {{ bill.status }}
+
+                    <div class="flex items-center justify-between">
+                      <div class="flex flex-col gap-1">
+                        <p
+                          class="text-[11px] font-medium text-slate-400 dark:text-slate-500 flex items-center gap-1.5"
+                        >
+                          <i class="pi pi-calendar text-[10px]"></i>
+                          {{ bill.date | date: 'mediumDate' }}
+                        </p>
+
+                        <div class="flex items-center gap-1.5">
+                          <p-avatar
+                            [image]="bill.creditorAvatar"
+                            shape="circle"
+                            styleClass="!w-4 !h-4 border border-white dark:border-slate-900"
+                          ></p-avatar>
+                          <span
+                            class="text-[10px] font-bold text-orange-600 dark:text-orange-400"
+                            >{{ bill.creditorName }}</span
+                          >
+                        </div>
+                      </div>
+
+                      <!-- <div
+                        class="text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter border shadow-sm shrink-0"
+                        [class]="
+                          bill.status === 'PAID'
+                            ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800/30'
+                            : 'bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800/30'
+                        "
+                      >
+                        {{ bill.status }}
+                      </div> -->
                     </div>
                   </div>
                 </div>
-              </div>
-            </p-card>
-          }
-        </div>
-      }
+              </p-card>
+            }
+          </div>
+        }
+      </div>
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BillsToPayComponent implements OnInit {
   private ledgerService = inject(LedgerService);
@@ -134,7 +145,7 @@ export class BillsToPayComponent implements OnInit {
       error: (err) => {
         console.error('Error fetching debtor bills:', err);
         this.isLoading.set(false);
-      }
+      },
     });
   }
 }

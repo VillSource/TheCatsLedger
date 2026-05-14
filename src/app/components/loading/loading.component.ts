@@ -6,14 +6,16 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="fixed inset-0 z-9999 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+    <div
+      class="fixed inset-0 z-9999 flex flex-col items-center justify-center  transition-colors duration-300"
+    >
       <div class="relative">
         <!-- Pulse Rings -->
         <div class="absolute inset-0 rounded-full bg-orange-400/20 animate-ping"></div>
         <div class="absolute inset-0 rounded-full bg-orange-400/10 animate-ping delay-300"></div>
 
         <!-- Cat Icon / Spinner -->
-        <div class="relative bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800">
+        <div class="relative bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-2xl ">
           <div class="text-6xl animate-bounce mb-2">🐱</div>
           <div class="flex gap-1 justify-center">
             <div class="w-2 h-2 rounded-full bg-orange-500 animate-bounce delay-75"></div>
