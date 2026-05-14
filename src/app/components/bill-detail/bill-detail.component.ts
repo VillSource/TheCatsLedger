@@ -135,20 +135,22 @@ import { LiffService } from '../../services/liff.service';
           </div>
 
           <div class="mt-8 flex gap-3">
-            <p-button
-              label="Share Again"
-              icon="pi pi-share-alt"
-              styleClass="w-full"
-              severity="secondary"
-              (click)="shareAgain()"
-            ></p-button>
-            <p-button
-              label="Mark as Paid"
-              icon="pi pi-check"
-              styleClass="w-full"
-              severity="success"
-              [disabled]="b.status === 'PAID'"
-            ></p-button>
+            @if (isCreditor()) {
+              <p-button
+                label="Share Again"
+                icon="pi pi-share-alt"
+                styleClass="w-full"
+                severity="secondary"
+                (click)="shareAgain()"
+              ></p-button>
+              <p-button
+                label="Mark as Paid"
+                icon="pi pi-check"
+                styleClass="w-full"
+                severity="success"
+                [disabled]="b.status === 'PAID'"
+              ></p-button>
+            }
           </div>
         </p-card>
       } @else {
@@ -169,6 +171,7 @@ export class BillDetailComponent implements OnInit, AfterViewInit {
 
   bill = signal<DebtBill | null>(null);
   isLoading = signal(true);
+  isCreditor = signal<boolean>(false);
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -184,6 +187,7 @@ export class BillDetailComponent implements OnInit, AfterViewInit {
   }
 
   async ngAfterViewInit() {
+    this.isCreditor.set(this.bill()?.creditorId === this.liffService.profile()?.userId);
     const id = this.route.snapshot.paramMap.get('id');
     console.log('bill detail id', id);
     if (!id) return;
