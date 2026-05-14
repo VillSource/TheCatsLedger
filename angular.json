@@ -53,6 +53,17 @@
                   "with": "src/environments/environment.development.ts"
                 }
               ]
+            },
+            "review": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.review.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -65,11 +76,15 @@
             },
             "development": {
               "buildTarget": "TheCatsLedger:build:development"
+            },
+            "review": {
+              "buildTarget": "TheCatsLedger:build:review"
             }
           },
           "defaultConfiguration": "development",
           "options": {
-            "allowedHosts": ["hyphen-washed-figurine.ngrok-free.dev"]
+            "allowedHosts": ["hyphen-washed-figurine.ngrok-free.dev"],
+            "ssl": true
           }
         },
         "test": {
