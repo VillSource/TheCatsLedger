@@ -481,10 +481,10 @@ export class LiffService {
 
     flexMessage.contents.hero = {
       type: 'image',
-      url: 'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjdqNHFvcnpkcHhkODI1aWJhaHZkZmI1YWNvZ3FhY2k0emQ4Y3c3biZlcD12MV9naWZzX3NlYXJjaCZjdD1n/sDcfxFDozb3bO/giphy.gif',
+      url: 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExemRubDQwdWdxb3EwaGZ0aThpanZsMGw2OTI0OHkwN2V1bzE3OXBueCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/TdwziQPhbNAzK/giphy.gif',
       aspectMode: 'fit',
       size: 'full',
-      aspectRatio: '16:8.97',
+      aspectRatio: '16:10',
       gravity: 'top',
       align: 'center',
       animated: true,
