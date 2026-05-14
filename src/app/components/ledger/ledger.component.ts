@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
@@ -174,9 +174,13 @@ import { LiffService } from '../../services/liff.service';
               {{ isEmojiPickerOpen() ? 'Collapse' : 'Change Emoji' }}
             </button>
           </div>
-          
-          <div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700">
-            <div class="w-12 h-12 flex items-center justify-center text-3xl bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+
+          <div
+            class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700"
+          >
+            <div
+              class="w-12 h-12 flex items-center justify-center text-3xl bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700"
+            >
               {{ billForm.get('emoji')?.value }}
             </div>
             <div class="flex-1">
@@ -188,15 +192,19 @@ import { LiffService } from '../../services/liff.service';
           </div>
 
           @if (isEmojiPickerOpen()) {
-            <div class="flex flex-wrap gap-2 p-3 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-inner mt-1 max-h-48 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200">
+            <div
+              class="flex flex-wrap gap-2 p-3 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-inner mt-1 max-h-48 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200"
+            >
               @for (e of emojis; track e) {
                 <button
                   type="button"
                   (click)="selectEmoji(e)"
                   class="w-10 h-10 flex items-center justify-center text-xl rounded-xl transition-all duration-200 hover:scale-110 active:scale-95 border-2"
-                  [class]="billForm.get('emoji')?.value === e 
-                    ? 'bg-orange-100 border-orange-400 dark:bg-orange-900/40 dark:border-orange-500' 
-                    : 'bg-white dark:bg-slate-800 border-transparent hover:border-slate-300 dark:hover:border-slate-600'"
+                  [class]="
+                    billForm.get('emoji')?.value === e
+                      ? 'bg-orange-100 border-orange-400 dark:bg-orange-900/40 dark:border-orange-500'
+                      : 'bg-white dark:bg-slate-800 border-transparent hover:border-slate-300 dark:hover:border-slate-600'
+                  "
                 >
                   {{ e }}
                 </button>
@@ -210,7 +218,7 @@ import { LiffService } from '../../services/liff.service';
             <label for="amount" class="font-semibold text-slate-700 dark:text-slate-200">
               Amount (THB) <span class="text-red-500">*</span>
             </label>
-            
+
             <!-- Quick Amount Selection -->
             <div class="flex flex-wrap gap-2 mb-2">
               @for (amt of quickAmounts; track amt) {
@@ -218,9 +226,11 @@ import { LiffService } from '../../services/liff.service';
                   type="button"
                   (click)="setAmount(amt)"
                   class="px-3 py-1.5 text-sm font-bold rounded-xl border transition-all active:scale-95"
-                  [class]="billForm.get('amount')?.value === amt
-                    ? 'bg-orange-500 border-orange-500 text-white shadow-md shadow-orange-500/30'
-                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-orange-300'"
+                  [class]="
+                    billForm.get('amount')?.value === amt
+                      ? 'bg-orange-500 border-orange-500 text-white shadow-md shadow-orange-500/30'
+                      : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-orange-300'
+                  "
                 >
                   ฿{{ amt }}
                 </button>
@@ -272,7 +282,7 @@ import { LiffService } from '../../services/liff.service';
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LedgerComponent {
+export class LedgerComponent implements OnInit {
   private fb = inject(FormBuilder);
   private ledgerService = inject(LedgerService);
   private liffService = inject(LiffService);
@@ -283,9 +293,42 @@ export class LedgerComponent {
   bills = signal<DebtBill[]>([]);
   isEmojiPickerOpen = signal(false);
   emojis = [
-    '💸', '🍽️', '🚕', '🏠', '🛍️', '🎮', '🍻', '🐱', '☕', '🎁', '⛽', '🍿',
-    '🍕', '🍔', '🍦', '🚲', '🎬', '🎤', '🏀', '💼', '✈️', '🛀', '💊', '📚',
-    '⚡', '🔌', '💧', '📶', '🛒', '🎟️', '🏥', '🔨', '🧹', '🧼', '🌱', '🍎'
+    '💸',
+    '🍽️',
+    '🚕',
+    '🏠',
+    '🛍️',
+    '🎮',
+    '🍻',
+    '🐱',
+    '☕',
+    '🎁',
+    '⛽',
+    '🍿',
+    '🍕',
+    '🍔',
+    '🍦',
+    '🚲',
+    '🎬',
+    '🎤',
+    '🏀',
+    '💼',
+    '✈️',
+    '🛀',
+    '💊',
+    '📚',
+    '⚡',
+    '🔌',
+    '💧',
+    '📶',
+    '🛒',
+    '🎟️',
+    '🏥',
+    '🔨',
+    '🧹',
+    '🧼',
+    '🌱',
+    '🍎',
   ];
   quickAmounts = [50, 100, 300, 500, 1000];
 
@@ -296,8 +339,16 @@ export class LedgerComponent {
     note: [''],
   });
 
-  constructor() {
-    this.ledgerService.getBills().subscribe({
+  async ngOnInit() {
+    const userId = this.liffService.profile()?.userId;
+
+    if (!userId) {
+      console.error('No user profile');
+      this.isLoading.set(false);
+      return;
+    }
+
+    this.ledgerService.getBills(userId).subscribe({
       next: (bills) => {
         this.bills.set(bills);
         this.isLoading.set(false);
@@ -319,7 +370,7 @@ export class LedgerComponent {
   }
 
   toggleEmojiPicker() {
-    this.isEmojiPickerOpen.update(v => !v);
+    this.isEmojiPickerOpen.update((v) => !v);
   }
 
   showAddDialog(): void {

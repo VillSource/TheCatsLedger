@@ -14,6 +14,8 @@ import {
   type Firestore,
   updateDoc,
   where,
+  setDoc,
+  getDocs,
 } from 'firebase/firestore';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -50,21 +52,37 @@ export class LedgerService {
     this.db = getFirestore(app);
   }
 
-  getBills(): Observable<DebtBill[]> {
+  getBills(userId: string): Observable<DebtBill[]> {
     return new Observable<DebtBill[]>((subscriber) => {
       const billsQuery = query(
         collection(this.db, 'bills'),
-        where('creditorId', '==', this.liffService.profile()?.userId),
+        where('creditorId', '==', userId),
         orderBy('date', 'desc'),
       );
 
       const unsubscribe = onSnapshot(
         billsQuery,
-        (snapshot) => {
-          const bills: DebtBill[] = snapshot.docs.map((doc) => {
-            const data = doc.data();
+        async (snapshot) => {
+          const billPromises = snapshot.docs.map(async (docSnap) => {
+            const data = docSnap.data();
+            const id = docSnap.id;
+
+            // Fetch debtors sub-collection
+            const debtorsSnap = await getDocs(collection(this.db, `bills/${id}/debtors`));
+            const debtors: { [key: string]: { avatar: string; name: string } } = {};
+            debtorsSnap.forEach((d) => {
+              const debtorData = d.data();
+              const debtorName = (debtorData['name'] ?? 'Unknown') as string;
+              debtors[d.id] = {
+                name: debtorName,
+                avatar:
+                  (debtorData['avatar'] as string | undefined) ??
+                  `https://api.dicebear.com/7.x/initials/svg?seed=${debtorName}`,
+              };
+            });
+
             return {
-              id: doc.id,
+              id: id,
               name: data['name'] as string,
               emoji: data['emoji'] as string,
               note: data['note'] as string | undefined,
@@ -74,11 +92,11 @@ export class LedgerService {
               creditorId: data['creditorId'] as string | undefined,
               creditorName: data['creditorName'] as string | undefined,
               creditorAvatar: data['creditorAvatar'] as string | undefined,
-              debtors: data['debtors'] as
-                | { [key: string]: { avatar: string; name: string } }
-                | undefined,
+              debtors,
             };
           });
+
+          const bills = await Promise.all(billPromises);
           subscriber.next(bills);
         },
         (error) => subscriber.error(error),
@@ -107,12 +125,8 @@ export class LedgerService {
     const docRef = doc(this.db, `bills/${billId}`);
     const bill = await getDoc(docRef);
 
-    console.log('bill', bill.data());
-    console.log('creditorId', bill.data()!['creditorId']);
-    console.log('userId', this.liffService.profile()?.userId);
-
     if (bill?.exists() && bill.data()['creditorId'] === this.liffService.profile()?.userId) {
-      console.log('Already debtor');
+      console.log('Already creditor, skipping debtor add');
       return;
     }
 
@@ -125,13 +139,12 @@ export class LedgerService {
     const displayName = this.liffService.profile()?.displayName;
     const pictureUrl = this.liffService.profile()?.pictureUrl;
 
-    updateDoc(docRef, {
-      debtors: {
-        [userId]: {
-          ...(pictureUrl ? { avatar: pictureUrl } : {}),
-          name: displayName ?? 'Unknown',
-        },
-      },
+    const debtorDocRef = doc(this.db, `bills/${billId}/debtors`, userId);
+
+    await setDoc(debtorDocRef, {
+      avatar: pictureUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${displayName}`,
+      name: displayName || 'Unknown',
+      joinedAt: Timestamp.now(),
     });
   }
 
@@ -141,13 +154,25 @@ export class LedgerService {
 
     if (docSnap.exists()) {
       const data = docSnap.data();
+
+      // Fetch debtors sub-collection
+      const debtorsSnap = await getDocs(collection(this.db, `bills/${id}/debtors`));
+      const debtors: { [key: string]: { avatar: string; name: string } } = {};
+      debtorsSnap.forEach((d) => {
+        const debtorData = d.data();
+        debtors[d.id] = {
+          avatar: debtorData['avatar'] as string,
+          name: debtorData['name'] as string,
+        };
+      });
+
       return {
         id: docSnap.id,
         name: data['name'] as string,
         creditorAvatar: data['creditorAvatar'] as string | undefined,
         creditorName: data['creditorName'] as string | undefined,
         creditorId: data['creditorId'] as string | undefined,
-        debtors: data['debtors'] as { [key: string]: { avatar: string; name: string } },
+        debtors,
         emoji: data['emoji'] as string,
         note: data['note'] as string | undefined,
         amount: data['amount'] as number,
