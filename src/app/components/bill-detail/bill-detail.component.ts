@@ -16,6 +16,7 @@ import { DividerModule } from 'primeng/divider';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { LiffProfile, LiffService } from '../../services/liff.service';
 import { THAI_BANKS } from '../../constants/banks';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-bill-detail',
@@ -40,7 +41,7 @@ import { THAI_BANKS } from '../../constants/banks';
       @if (isLoading()) {
         <div class="flex flex-col items-center justify-center p-12">
           <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4"></p-progressSpinner>
-          <p class="text-slate-500 mt-4 font-medium animate-pulse">Fetching details...</p>
+          <p class="text-slate-500 mt-4 font-medium animate-pulse">{{ ls.t().fetching_details }}</p>
         </div>
       } @else if (bill(); as b) {
         <p-card styleClass="overflow-hidden border-none shadow-xl rounded-2xl">
@@ -53,7 +54,7 @@ import { THAI_BANKS } from '../../constants/banks';
                 {{ b.name }}
               </h1>
               <p-tag
-                [value]="b.status"
+                [value]="b.status === 'PAID' ? ls.t().paid : ls.t().pending"
                 [severity]="b.status === 'PAID' ? 'success' : 'warn'"
               ></p-tag>
             </div>
@@ -64,7 +65,7 @@ import { THAI_BANKS } from '../../constants/banks';
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
             <div>
               <label class="text-sm text-slate-500 uppercase tracking-wider font-semibold"
-                >Amount</label
+                >{{ ls.t().amount }}</label
               >
               <p class="text-3xl font-bold text-orange-500 mt-1">
                 {{ b.amount | currency: 'THB' : 'symbol' : '1.2-2' }}
@@ -72,7 +73,7 @@ import { THAI_BANKS } from '../../constants/banks';
             </div>
             <div>
               <label class="text-sm text-slate-500 uppercase tracking-wider font-semibold"
-                >Date</label
+                >{{ ls.t().date }}</label
               >
               <p class="text-lg text-slate-700 dark:text-slate-300 mt-1">
                 {{ b.date | date: 'longDate' }}
@@ -84,7 +85,7 @@ import { THAI_BANKS } from '../../constants/banks';
             <p-divider></p-divider>
             <div class="py-4">
               <label class="text-sm text-slate-500 uppercase tracking-wider font-semibold"
-                >Note</label
+                >{{ ls.t().note }}</label
               >
               <p
                 class="text-slate-700 dark:text-slate-300 mt-2 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl italic"
@@ -98,7 +99,7 @@ import { THAI_BANKS } from '../../constants/banks';
 
           <div class="py-4 flex flex-col gap-4">
             <h3 class="text-sm text-slate-500 uppercase tracking-wider font-semibold">
-              Creditor Info
+              {{ ls.t().creditor_info }}
             </h3>
             <div class="flex items-center gap-3">
               @if (b.creditorAvatar) {
@@ -111,7 +112,7 @@ import { THAI_BANKS } from '../../constants/banks';
                 </div>
               }
               <span class="text-slate-900 dark:text-white font-medium">
-                {{ b.creditorName || 'Unknown Debtor' }}
+                {{ b.creditorName || ls.t().someone }}
               </span>
             </div>
           </div>
@@ -120,21 +121,21 @@ import { THAI_BANKS } from '../../constants/banks';
             <p-divider></p-divider>
             <div class="py-4 flex flex-col gap-4">
               <h3 class="text-sm text-slate-500 uppercase tracking-wider font-semibold">
-                Payment Details
+                {{ ls.t().payment_details }}
               </h3>
               <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-2xl border border-orange-100 dark:border-orange-800/30 flex flex-col gap-3">
                 @if (p.promptPay) {
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                       <img src="https://raw.githubusercontent.com/casperstack/thai-banks-logo/master/icons/PromptPay.png" class="h-4 object-contain" alt="PromptPay" />
-                      <span class="text-sm text-slate-500 dark:text-slate-400">PromptPay</span>
+                      <span class="text-sm text-slate-500 dark:text-slate-400">{{ ls.t().promptpay }}</span>
                     </div>
                     <span class="font-bold text-slate-800 dark:text-slate-100">{{ p.promptPay }}</span>
                   </div>
                 }
                 @if (p.bankName) {
                   <div class="flex flex-col gap-1">
-                    <span class="text-xs text-slate-500 dark:text-slate-400">Bank Transfer</span>
+                    <span class="text-xs text-slate-500 dark:text-slate-400">{{ ls.t().bank_transfer }}</span>
                     <div class="flex items-center justify-between mt-1">
                       <div class="flex items-center gap-2">
                         <img [src]="getBankLogo(p.bankName)" class="w-6 h-6 rounded-md shadow-sm" [alt]="p.bankName" />
@@ -153,7 +154,7 @@ import { THAI_BANKS } from '../../constants/banks';
 
           <div class="py-4 flex flex-col gap-4">
             <h3 class="text-sm text-slate-500 uppercase tracking-wider font-semibold">
-              Debtor Info
+              {{ ls.t().debtor_info }}
             </h3>
             <div class="flex items-center gap-3">
               @for (debtor of b.debtors | keyvalue; track debtor.key) {
@@ -167,7 +168,7 @@ import { THAI_BANKS } from '../../constants/banks';
                   </div>
                 }
                 <span class="text-slate-900 dark:text-white font-medium">
-                  {{ debtor.value.name || 'Unknown Debtor' }}
+                  {{ debtor.value.name || ls.t().someone }}
                 </span>
               }
             </div>
@@ -176,21 +177,21 @@ import { THAI_BANKS } from '../../constants/banks';
           <div class="mt-8 flex gap-3">
             @if (bill()?.creditorId === userProfile()?.userId) {
               <p-button
-                label="Share Again"
+                [label]="ls.t().share_again"
                 icon="pi pi-share-alt"
                 styleClass="w-full rounded-xl! font-semibold"
                 severity="secondary"
                 (click)="shareAgain()"
               ></p-button>
               <p-button
-                label="Mark as Paid"
+                [label]="ls.t().mark_as_paid"
                 icon="pi pi-check"
                 styleClass="w-full rounded-xl! font-bold bg-orange-500! border-orange-500! hover:bg-orange-600! hover:border-orange-600!"
                 [disabled]="b.status === 'PAID'"
               ></p-button>
             } @else if (isDebtor() && isInChat()) {
               <p-button
-                label="Notify Creditor"
+                [label]="ls.t().notify_creditor"
                 icon="pi pi-bell"
                 styleClass="w-full rounded-xl! font-bold bg-green-500! border-green-500! hover:bg-green-600! hover:border-green-600!"
                 [disabled]="b.status === 'PAID'"
@@ -202,18 +203,18 @@ import { THAI_BANKS } from '../../constants/banks';
 
         <div class="mt-4 flex justify-center items-center gap-3">
           <a routerLink="/" class="text-[10px] text-slate-400 hover:text-orange-500 transition-colors uppercase font-bold tracking-widest">
-            My Ledger
+            {{ ls.t().ledger_title }}
           </a>
           <span class="text-slate-300 dark:text-slate-700">|</span>
           <a routerLink="/bills-to-pay" class="text-[10px] text-slate-400 hover:text-orange-500 transition-colors uppercase font-bold tracking-widest">
-            Bills to Pay
+            {{ ls.t().bills_to_pay }}
           </a>
         </div>
       } @else {
         <div class="text-center p-8 bg-white dark:bg-slate-900 rounded-2xl shadow-sm">
           <i class="pi pi-exclamation-circle text-4xl text-slate-300 mb-4 block"></i>
-          <p class="text-slate-500">Bill not found</p>
-          <p-button label="Go Home" [text]="true" routerLink="/" styleClass="mt-4"></p-button>
+          <p class="text-slate-500">{{ ls.t().bill_not_found }}</p>
+          <p-button [label]="ls.t().go_home" [text]="true" routerLink="/" styleClass="mt-4"></p-button>
         </div>
       }
     </div>
@@ -221,6 +222,7 @@ import { THAI_BANKS } from '../../constants/banks';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BillDetailComponent implements OnInit, AfterViewInit {
+  ls = inject(LanguageService);
   private route = inject(ActivatedRoute);
   private ledgerService = inject(LedgerService);
   private liffService = inject(LiffService);

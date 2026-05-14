@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-loading',
@@ -31,14 +32,16 @@ import { CommonModule } from '@angular/common';
       <!-- Loading Text -->
       <div class="mt-8 text-center">
         <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">
-          The Cat's Ledger
+          {{ ls.t().ledger_title }}
         </h2>
         <p class="text-slate-500 dark:text-slate-400 text-sm mt-1 animate-pulse">
-          Initializing paw-some experience...
+          {{ ls.t().loading }}
         </p>
       </div>
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoadingComponent {}
+export class LoadingComponent {
+  ls = inject(LanguageService);
+}

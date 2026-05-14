@@ -12,6 +12,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { LedgerService, DebtBill } from '../../services/ledger.service';
 import { LiffService } from '../../services/liff.service';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-ledger',
@@ -36,17 +37,25 @@ import { LiffService } from '../../services/liff.service';
         <h2
           class="text-2xl sm:text-3xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight"
         >
-          <span class="hidden sm:inline">The Cat's Ledger</span>
+          <span class="hidden sm:inline">{{ ls.t().ledger_title }}</span>
           <span class="sm:hidden text-3xl">😼</span>
         </h2>
         <div class="flex items-center gap-2">
+          <p-button
+            [label]="ls.lang().toUpperCase()"
+            [rounded]="true"
+            [text]="true"
+            severity="secondary"
+            styleClass="text-xs font-bold"
+            (onClick)="ls.toggleLang()"
+          ></p-button>
           <p-button
             icon="pi pi-credit-card"
             [rounded]="true"
             [text]="true"
             severity="secondary"
             routerLink="/my-payment"
-            pTooltip="My Payment Info"
+            [pTooltip]="ls.t().payment_info"
             tooltipPosition="bottom"
           ></p-button>
           <p-button
@@ -55,11 +64,11 @@ import { LiffService } from '../../services/liff.service';
             [text]="true"
             severity="secondary"
             routerLink="/bills-to-pay"
-            pTooltip="Bills to Pay"
+            [pTooltip]="ls.t().bills_to_pay"
             tooltipPosition="bottom"
           ></p-button>
           <p-button
-            label="New Bill"
+            [label]="ls.t().new_bill"
             icon="pi pi-plus"
             styleClass="rounded-xl! font-bold shadow-md! bg-orange-500! border-orange-500! hover:bg-orange-600! hover:border-orange-600!"
             (onClick)="showAddDialog()"
@@ -71,7 +80,7 @@ import { LiffService } from '../../services/liff.service';
         @if (isLoading()) {
           <div class="flex flex-col items-center justify-center p-12">
             <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4"></p-progressSpinner>
-            <p class="text-slate-500 mt-4 font-medium animate-pulse">Loading bills...</p>
+            <p class="text-slate-500 mt-4 font-medium animate-pulse">{{ ls.t().loading }}</p>
           </div>
         } @else {
           @for (bill of bills(); track bill.id) {
@@ -114,7 +123,7 @@ import { LiffService } from '../../services/liff.service';
                             styleClass="!w-4 !h-4 !text-[8px] font-bold !bg-orange-100 !text-orange-700"
                           ></p-avatar>
                           <span class="text-[10px] font-bold text-slate-600 dark:text-slate-400 truncate max-w-[100px]"
-                            >{{ debtor.value.name }}</span
+                            >{{ ls.t().bill_for }} {{ debtor.value.name }}</span
                           >
                         </div>
                       }
@@ -128,7 +137,7 @@ import { LiffService } from '../../services/liff.service';
                           : 'bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800/30'
                       "
                     >
-                      {{ bill.status }}
+                      {{ bill.status === 'PAID' ? ls.t().paid : ls.t().pending }}
                     </div>
                   </div>
                 </div>
@@ -140,10 +149,10 @@ import { LiffService } from '../../services/liff.service';
             >
               <i class="pi pi-receipt text-6xl text-slate-300 dark:text-slate-600 mb-4"></i>
               <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300 mb-2">
-                No bills yet
+                {{ ls.t().no_bills }}
               </h3>
               <p class="text-slate-500 dark:text-slate-400">
-                You haven't added any debts to your ledger.
+                {{ ls.t().no_bills_desc }}
               </p>
             </div>
           }
@@ -153,7 +162,7 @@ import { LiffService } from '../../services/liff.service';
 
     <!-- Add Bill Dialog -->
     <p-dialog
-      header="Create New Bill"
+      [header]="ls.t().create_bill"
       [modal]="true"
       [visible]="isDialogVisible()"
       (visibleChange)="isDialogVisible.set($event)"
@@ -163,7 +172,7 @@ import { LiffService } from '../../services/liff.service';
       <form [formGroup]="billForm" (ngSubmit)="saveBill()" class="flex flex-col gap-4 mt-2">
         <div class="flex flex-col gap-2">
           <label for="name" class="font-semibold text-slate-700 dark:text-slate-200">
-            Bill Name <span class="text-red-500">*</span>
+            {{ ls.t().bill_name }} <span class="text-red-500">*</span>
           </label>
           <input
             pInputText
@@ -227,7 +236,7 @@ import { LiffService } from '../../services/liff.service';
         <div class="flex flex-col gap-4">
           <div class="flex flex-col gap-2">
             <label for="amount" class="font-semibold text-slate-700 dark:text-slate-200">
-              Amount (THB) <span class="text-red-500">*</span>
+              {{ ls.t().amount }} (THB) <span class="text-red-500">*</span>
             </label>
 
             <!-- Quick Amount Selection -->
@@ -295,6 +304,7 @@ import { LiffService } from '../../services/liff.service';
 })
 export class LedgerComponent implements OnInit {
   private fb = inject(FormBuilder);
+  ls = inject(LanguageService);
   private ledgerService = inject(LedgerService);
   private liffService = inject(LiffService);
 

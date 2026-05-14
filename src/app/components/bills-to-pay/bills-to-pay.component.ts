@@ -8,6 +8,7 @@ import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { LedgerService, DebtBill } from '../../services/ledger.service';
 import { LiffService } from '../../services/liff.service';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-bills-to-pay',
@@ -33,14 +34,14 @@ import { LiffService } from '../../services/liff.service';
           severity="secondary"
           routerLink="/"
         ></p-button>
-        <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Bills to Pay</h1>
+        <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">{{ ls.t().bills_to_pay }}</h1>
       </div>
 
       <div class="flex flex-col gap-4">
         @if (isLoading()) {
           <div class="flex flex-col items-center justify-center p-12">
             <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4"></p-progressSpinner>
-            <p class="text-slate-500 mt-4 font-medium animate-pulse">Loading bills...</p>
+            <p class="text-slate-500 mt-4 font-medium animate-pulse">{{ ls.t().loading }}</p>
           </div>
         } @else if (bills().length === 0) {
           <div
@@ -48,10 +49,10 @@ import { LiffService } from '../../services/liff.service';
           >
             <div class="text-6xl mb-4">🙌</div>
             <h3 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">
-              All settled up!
+              {{ ls.t().all_settled }}
             </h3>
             <p class="text-slate-500 dark:text-slate-400">
-              You don't have any bills to pay right now.
+              {{ ls.t().all_settled_desc }}
             </p>
           </div>
         } @else {
@@ -99,7 +100,7 @@ import { LiffService } from '../../services/liff.service';
                           ></p-avatar>
                           <span
                             class="text-[10px] font-bold text-orange-600 dark:text-orange-400"
-                            >{{ bill.creditorName }}</span
+                            >{{ ls.t().owe_to }} {{ bill.creditorName }}</span
                           >
                         </div>
                       </div>
@@ -127,6 +128,7 @@ import { LiffService } from '../../services/liff.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BillsToPayComponent implements OnInit {
+  ls = inject(LanguageService);
   private ledgerService = inject(LedgerService);
   private liffService = inject(LiffService);
 

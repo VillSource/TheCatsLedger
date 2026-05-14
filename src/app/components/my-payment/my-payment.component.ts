@@ -11,6 +11,7 @@ import { ToastModule } from 'primeng/toast';
 import { LedgerService, UserPaymentInfo } from '../../services/ledger.service';
 import { LiffService } from '../../services/liff.service';
 import { THAI_BANKS } from '../../constants/banks';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-my-payment',
@@ -38,14 +39,14 @@ import { THAI_BANKS } from '../../constants/banks';
           severity="secondary"
           routerLink="/"
         ></p-button>
-        <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">My Payment Info</h1>
+        <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100">{{ ls.t().my_payment_setup }}</h1>
       </div>
 
       <p-card styleClass="shadow-xl rounded-3xl border-0 overflow-hidden">
         <div class="mb-6 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-2xl border border-orange-100 dark:border-orange-800/30">
           <p class="text-sm text-orange-700 dark:text-orange-300">
             <i class="pi pi-info-circle mr-2"></i>
-            This information will be shown to your debtors when they view the bill detail, making it easier for them to pay you.
+            {{ ls.t().my_payment_desc }}
           </p>
         </div>
 
@@ -54,7 +55,7 @@ import { THAI_BANKS } from '../../constants/banks';
           <div class="flex flex-col gap-3">
             <label for="promptPay" class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
               <img src="https://raw.githubusercontent.com/casperstack/thai-banks-logo/master/icons/PromptPay.png" class="h-6 object-contain" alt="PromptPay" />
-              PromptPay Number
+              {{ ls.t().promptpay }}
             </label>
             <input
               pInputText
@@ -70,7 +71,7 @@ import { THAI_BANKS } from '../../constants/banks';
               <div class="w-full border-t border-slate-200 dark:border-slate-800"></div>
             </div>
             <div class="relative flex justify-center">
-              <span class="bg-white dark:bg-slate-900 px-3 text-sm text-slate-400">OR BANK ACCOUNT</span>
+              <span class="bg-white dark:bg-slate-900 px-3 text-sm text-slate-400 uppercase">{{ ls.t().bank_transfer }}</span>
             </div>
           </div>
 
@@ -79,7 +80,7 @@ import { THAI_BANKS } from '../../constants/banks';
             <div class="flex flex-col gap-2">
               <label for="bankName" class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
                 <i class="pi pi-building text-orange-500"></i>
-                Bank Name
+                {{ ls.t().bank_name }}
               </label>
               <p-select
                 id="bankName"
@@ -120,7 +121,7 @@ import { THAI_BANKS } from '../../constants/banks';
             </div>
 
             <div class="flex flex-col gap-2">
-              <label for="accountNumber" class="font-bold text-slate-700 dark:text-slate-200">Account Number</label>
+              <label for="accountNumber" class="font-bold text-slate-700 dark:text-slate-200">{{ ls.t().account_number }}</label>
               <input
                 pInputText
                 id="accountNumber"
@@ -131,7 +132,7 @@ import { THAI_BANKS } from '../../constants/banks';
             </div>
 
             <div class="flex flex-col gap-2">
-              <label for="accountName" class="font-bold text-slate-700 dark:text-slate-200">Account Name</label>
+              <label for="accountName" class="font-bold text-slate-700 dark:text-slate-200">{{ ls.t().account_name }}</label>
               <input
                 pInputText
                 id="accountName"
@@ -145,7 +146,7 @@ import { THAI_BANKS } from '../../constants/banks';
           <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
             <p-button
               type="submit"
-              label="Save Payment Info"
+              [label]="ls.t().save"
               icon="pi pi-save"
               styleClass="w-full rounded-xl! font-bold py-3 bg-orange-500! border-orange-500! hover:bg-orange-600! hover:border-orange-600!"
               [loading]="isSaving()"
@@ -163,6 +164,7 @@ import { THAI_BANKS } from '../../constants/banks';
   `],
 })
 export class MyPaymentComponent implements OnInit {
+  ls = inject(LanguageService);
   private fb = inject(FormBuilder);
   private ledgerService = inject(LedgerService);
   private liffService = inject(LiffService);

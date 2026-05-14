@@ -1,7 +1,8 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import liff from '@line/liff';
 import { environment } from '../../environments/environment';
 import type { DebtBill } from './ledger.service';
+import { LanguageService } from './language.service';
 
 export interface LiffProfile {
   userId: string;
@@ -15,6 +16,7 @@ export interface LiffProfile {
 })
 export class LiffService {
   private readonly liffId = environment.liffId;
+  private ls = inject(LanguageService);
 
   profile = signal<LiffProfile | null>(null);
   error = signal<string | null>(null);
@@ -72,6 +74,8 @@ export class LiffService {
       return false;
     }
 
+    const t = this.ls.t();
+
     const amountFormatted = new Intl.NumberFormat('th-TH', {
       style: 'currency',
       currency: 'THB',
@@ -85,7 +89,7 @@ export class LiffService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const flexMessage: any = {
       type: 'flex',
-      altText: `อย่าลืมจ่ายค่า "${bill.name}" นะ`,
+      altText: t.notify_paid_alt.replace('{name}', bill.name),
       contents: {
         type: 'bubble',
         size: 'kilo',
@@ -177,7 +181,7 @@ export class LiffService {
           contents: [
             {
               type: 'text',
-              text: '💰 Please settle this bill when you can!',
+              text: `💰 ${t.all_settled_desc}`,
               color: '#FF8C42',
               size: 'sm',
               align: 'center',
@@ -190,7 +194,7 @@ export class LiffService {
               margin: 'md',
               action: {
                 type: 'uri',
-                label: 'View in App',
+                label: t.view_details,
                 uri: `https://miniapp.line.me/${environment.liffId}?bill=${bill.id}`,
               },
             },
@@ -362,9 +366,10 @@ export class LiffService {
 
     const senderName = this.profile()?.displayName ?? 'Someone';
 
+    const t = this.ls.t();
     const flexMessage: any = {
       type: 'flex',
-      altText: `โอนค่า "${bill.name}" ให้แล้วนะ!`,
+      altText: t.notify_paid_alt.replace('{name}', bill.name),
       contents: {
         type: 'bubble',
         header: {
@@ -374,7 +379,7 @@ export class LiffService {
           contents: [
             {
               type: 'text',
-              text: '💸 แจ้งโอนเงินแล้ว',
+              text: t.notify_paid_header,
               color: '#FFFFFF',
               weight: 'bold',
               size: 'md',
@@ -404,7 +409,7 @@ export class LiffService {
                   contents: [
                     {
                       type: 'text',
-                      text: 'ยอดเงิน',
+                      text: t.amount,
                       size: 'sm',
                       color: '#666666',
                     },
@@ -423,7 +428,7 @@ export class LiffService {
                   contents: [
                     {
                       type: 'text',
-                      text: 'ผู้จ่าย',
+                      text: t.payer,
                       size: 'sm',
                       color: '#666666',
                     },
@@ -448,7 +453,7 @@ export class LiffService {
               contents: [
                 {
                   type: 'text',
-                  text: '⌛ กำลังรอเจ้าหนี้ตรวจสอบ',
+                  text: t.waiting_verification,
                   size: 'xs',
                   color: '#1DB446',
                   align: 'center',
@@ -467,7 +472,7 @@ export class LiffService {
               type: 'button',
               action: {
                 type: 'uri',
-                label: 'ดูรายละเอียดบิล',
+                label: t.view_details,
                 uri: `https://miniapp.line.me/${environment.liffId}/bill/${bill.id}`,
               },
               height: 'sm',
