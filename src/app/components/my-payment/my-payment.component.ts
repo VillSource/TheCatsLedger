@@ -10,6 +10,7 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { LedgerService, UserPaymentInfo } from '../../services/ledger.service';
 import { LiffService } from '../../services/liff.service';
+import { THAI_BANKS } from '../../constants/banks';
 
 @Component({
   selector: 'app-my-payment',
@@ -84,9 +85,26 @@ import { LiffService } from '../../services/liff.service';
                 id="bankName"
                 [options]="banks"
                 formControlName="bankName"
+                optionLabel="name"
+                optionValue="name"
                 placeholder="Select a Bank"
                 styleClass="w-full rounded-xl!"
-              ></p-select>
+              >
+                <ng-template #selectedItem let-selectedOption>
+                  @if (selectedOption) {
+                    <div class="flex items-center gap-3">
+                      <img [src]="getBankLogo(selectedOption.name)" class="w-6 h-6 rounded-md shadow-sm" [alt]="selectedOption.name" />
+                      <div>{{ selectedOption.name }}</div>
+                    </div>
+                  }
+                </ng-template>
+                <ng-template #item let-bank>
+                  <div class="flex items-center gap-3">
+                    <img [src]="bank.logo" class="w-6 h-6 rounded-md shadow-sm" [alt]="bank.name" />
+                    <div>{{ bank.name }}</div>
+                  </div>
+                </ng-template>
+              </p-select>
             </div>
 
             <div class="flex flex-col gap-2">
@@ -141,16 +159,11 @@ export class MyPaymentComponent implements OnInit {
 
   isSaving = signal(false);
   
-  banks = [
-    'Kasikornbank (KBank)',
-    'Siam Commercial Bank (SCB)',
-    'Bangkok Bank (BBL)',
-    'Krungthai Bank (KTB)',
-    'Bank of Ayudhya (Krungsri)',
-    'TMBThanachart (ttb)',
-    'Government Savings Bank (GSB)',
-    'UOB Thailand'
-  ];
+  banks = THAI_BANKS;
+
+  getBankLogo(name: string): string {
+    return this.banks.find((b) => b.name === name)?.logo || '';
+  }
 
   paymentForm = this.fb.group({
     promptPay: [''],

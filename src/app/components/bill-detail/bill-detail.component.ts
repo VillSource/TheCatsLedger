@@ -14,6 +14,7 @@ import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
 import { LiffProfile, LiffService } from '../../services/liff.service';
+import { THAI_BANKS } from '../../constants/banks';
 
 @Component({
   selector: 'app-bill-detail',
@@ -128,9 +129,12 @@ import { LiffProfile, LiffService } from '../../services/liff.service';
                 @if (p.bankName) {
                   <div class="flex flex-col gap-1">
                     <span class="text-xs text-slate-500 dark:text-slate-400">Bank Transfer</span>
-                    <div class="flex items-center justify-between">
-                      <span class="font-bold text-slate-800 dark:text-slate-100">{{ p.bankName }}</span>
-                      <span class="text-slate-700 dark:text-slate-200">{{ p.accountNumber }}</span>
+                    <div class="flex items-center justify-between mt-1">
+                      <div class="flex items-center gap-2">
+                        <img [src]="getBankLogo(p.bankName)" class="w-6 h-6 rounded-md shadow-sm" [alt]="p.bankName" />
+                        <span class="font-bold text-slate-800 dark:text-slate-100 text-sm">{{ p.bankName }}</span>
+                      </div>
+                      <span class="text-slate-700 dark:text-slate-200 font-bold">{{ p.accountNumber }}</span>
                     </div>
                     @if (p.accountName) {
                       <span class="text-xs text-slate-500 dark:text-slate-400 mt-1 italic">{{ p.accountName }}</span>
@@ -232,5 +236,9 @@ export class BillDetailComponent implements OnInit, AfterViewInit {
     const bill = this.bill();
     if (!bill) return;
     await this.liffService.shareToDebtor(bill);
+  }
+
+  getBankLogo(name: string): string {
+    return THAI_BANKS.find((b) => b.name === name)?.logo || '';
   }
 }
