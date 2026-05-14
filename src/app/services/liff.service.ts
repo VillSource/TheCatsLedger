@@ -487,6 +487,7 @@ export class LiffService {
       aspectRatio: '16:8.97',
       gravity: 'top',
       align: 'center',
+      animated: true,
     };
 
     try {
