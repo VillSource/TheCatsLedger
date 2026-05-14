@@ -52,7 +52,7 @@ import { AvatarModule } from 'primeng/avatar';
                   icon="pi pi-sign-out"
                   severity="danger"
                   (onClick)="liffService.logout()"
-                  styleClass="w-full !rounded-xl !py-3 md:!py-4 font-semibold !shadow-md md:text-lg"
+                  styleClass="w-full rounded-xl! font-semibold py-3 shadow-md"
                 ></p-button>
               </div>
             </div>
@@ -70,9 +70,8 @@ import { AvatarModule } from 'primeng/avatar';
             <p-button
               label="Login with LINE"
               icon="pi pi-sign-in"
-              severity="success"
               (onClick)="liffService.login()"
-              styleClass="w-full !rounded-xl !py-3.5 md:!py-4 text-lg md:text-xl font-bold !shadow-lg !shadow-green-500/20"
+              styleClass="w-full rounded-xl! py-4 text-lg font-bold shadow-lg bg-orange-500! border-orange-500! hover:bg-orange-600! hover:border-orange-600!"
             ></p-button>
           </div>
         </p-card>

@@ -9,6 +9,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { LedgerService, DebtBill } from '../../services/ledger.service';
 import { LiffService } from '../../services/liff.service';
 
@@ -25,6 +26,7 @@ import { LiffService } from '../../services/liff.service';
     CommonModule,
     RouterLink,
     TooltipModule,
+    ProgressSpinnerModule,
   ],
   template: `
     <div class="p-4 sm:p-8 md:p-12 w-full max-w-4xl mx-auto font-sans">
@@ -58,7 +60,7 @@ import { LiffService } from '../../services/liff.service';
           <p-button
             label="New Bill"
             icon="pi pi-plus"
-            styleClass="rounded-xl! font-bold shadow-md!"
+            styleClass="rounded-xl! font-bold shadow-md! bg-orange-500! border-orange-500! hover:bg-orange-600! hover:border-orange-600!"
             (onClick)="showAddDialog()"
           ></p-button>
         </div>
@@ -66,9 +68,9 @@ import { LiffService } from '../../services/liff.service';
 
       <div class="flex flex-col gap-4">
         @if (isLoading()) {
-          <div class="text-center p-12">
-            <i class="pi pi-spin pi-spinner text-4xl text-slate-400"></i>
-            <p class="text-slate-500 mt-4">Loading bills...</p>
+          <div class="flex flex-col items-center justify-center p-12">
+            <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4"></p-progressSpinner>
+            <p class="text-slate-500 mt-4 font-medium animate-pulse">Loading bills...</p>
           </div>
         } @else {
           @for (bill of bills(); track bill.id) {

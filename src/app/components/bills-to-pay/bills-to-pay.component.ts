@@ -5,6 +5,7 @@ import { CardModule } from 'primeng/card';
 import { AvatarModule } from 'primeng/avatar';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { LedgerService, DebtBill } from '../../services/ledger.service';
 import { LiffService } from '../../services/liff.service';
 
@@ -18,6 +19,7 @@ import { LiffService } from '../../services/liff.service';
     AvatarModule,
     TagModule,
     ButtonModule,
+    ProgressSpinnerModule,
     CurrencyPipe,
     DatePipe
   ],
@@ -36,8 +38,9 @@ import { LiffService } from '../../services/liff.service';
 
       <div class="flex flex-col gap-4">
       @if (isLoading()) {
-        <div class="flex justify-center p-8">
-          <i class="pi pi-spin pi-spinner text-4xl text-slate-300"></i>
+        <div class="flex flex-col items-center justify-center p-12">
+          <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4"></p-progressSpinner>
+          <p class="text-slate-500 mt-4 font-medium animate-pulse">Loading bills...</p>
         </div>
       } @else if (bills().length === 0) {
         <div class="text-center p-12 bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">

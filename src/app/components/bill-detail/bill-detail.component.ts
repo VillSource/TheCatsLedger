@@ -13,6 +13,7 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { LiffProfile, LiffService } from '../../services/liff.service';
 import { THAI_BANKS } from '../../constants/banks';
 
@@ -28,6 +29,7 @@ import { THAI_BANKS } from '../../constants/banks';
     DividerModule,
     CurrencyPipe,
     DatePipe,
+    ProgressSpinnerModule,
   ],
   template: `
     <div class="p-4 pb-8 max-w-2xl mx-auto">
@@ -36,8 +38,9 @@ import { THAI_BANKS } from '../../constants/banks';
       </div> -->
 
       @if (isLoading()) {
-        <div class="flex justify-center p-8">
-          <i class="pi pi-spin pi-spinner text-4xl text-slate-400"></i>
+        <div class="flex flex-col items-center justify-center p-12">
+          <p-progressSpinner styleClass="w-12 h-12" strokeWidth="4"></p-progressSpinner>
+          <p class="text-slate-500 mt-4 font-medium animate-pulse">Fetching details...</p>
         </div>
       } @else if (bill(); as b) {
         <p-card styleClass="overflow-hidden border-none shadow-xl rounded-2xl">
@@ -175,15 +178,14 @@ import { THAI_BANKS } from '../../constants/banks';
               <p-button
                 label="Share Again"
                 icon="pi pi-share-alt"
-                styleClass="w-full"
+                styleClass="w-full rounded-xl! font-semibold"
                 severity="secondary"
                 (click)="shareAgain()"
               ></p-button>
               <p-button
                 label="Mark as Paid"
                 icon="pi pi-check"
-                styleClass="w-full"
-                severity="success"
+                styleClass="w-full rounded-xl! font-bold bg-orange-500! border-orange-500! hover:bg-orange-600! hover:border-orange-600!"
                 [disabled]="b.status === 'PAID'"
               ></p-button>
             }

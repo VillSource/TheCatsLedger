@@ -144,10 +144,10 @@ import { THAI_BANKS } from '../../constants/banks';
 
           <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
             <p-button
-              label="Save Payment Information"
-              icon="pi pi-save"
               type="submit"
-              styleClass="w-full rounded-xl! py-4! shadow-lg shadow-orange-500/20"
+              label="Save Payment Info"
+              icon="pi pi-save"
+              styleClass="w-full rounded-xl! font-bold py-3 bg-orange-500! border-orange-500! hover:bg-orange-600! hover:border-orange-600!"
               [loading]="isSaving()"
               [disabled]="paymentForm.invalid"
             ></p-button>
