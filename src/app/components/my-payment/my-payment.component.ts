@@ -89,19 +89,31 @@ import { THAI_BANKS } from '../../constants/banks';
                 optionValue="name"
                 placeholder="Select a Bank"
                 styleClass="w-full rounded-xl!"
+                [showClear]="true"
+                (onChange)="onBankChange($event)"
               >
                 <ng-template #selectedItem let-selectedOption>
-                  @if (selectedOption) {
+                  @if (selectedOption && selectedOption.code !== 'none') {
                     <div class="flex items-center gap-3">
                       <img [src]="getBankLogo(selectedOption.name)" class="w-6 h-6 rounded-md shadow-sm" [alt]="selectedOption.name" />
                       <div>{{ selectedOption.name }}</div>
+                    </div>
+                  } @else {
+                    <div class="flex items-center gap-3 text-slate-400">
+                      <i class="pi pi-ban"></i>
+                      <span>No Bank Selected</span>
                     </div>
                   }
                 </ng-template>
                 <ng-template #item let-bank>
                   <div class="flex items-center gap-3">
-                    <img [src]="bank.logo" class="w-6 h-6 rounded-md shadow-sm" [alt]="bank.name" />
-                    <div>{{ bank.name }}</div>
+                    @if (bank.code !== 'none') {
+                      <img [src]="bank.logo" class="w-6 h-6 rounded-md shadow-sm" [alt]="bank.name" />
+                      <div>{{ bank.name }}</div>
+                    } @else {
+                      <i class="pi pi-ban text-slate-400"></i>
+                      <div class="text-slate-400 font-medium italic">{{ bank.name }}</div>
+                    }
                   </div>
                 </ng-template>
               </p-select>
@@ -159,10 +171,23 @@ export class MyPaymentComponent implements OnInit {
 
   isSaving = signal(false);
   
-  banks = THAI_BANKS;
+  banks = [
+    { name: 'No Bank (Clear Info)', code: 'none', logo: '', color: '' },
+    ...THAI_BANKS
+  ];
 
   getBankLogo(name: string): string {
     return this.banks.find((b) => b.name === name)?.logo || '';
+  }
+
+  onBankChange(event: any) {
+    if (!event.value || event.value === 'No Bank (Clear Info)') {
+      this.paymentForm.patchValue({
+        bankName: '',
+        accountNumber: '',
+        accountName: ''
+      });
+    }
   }
 
   paymentForm = this.fb.group({
