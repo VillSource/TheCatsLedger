@@ -51,43 +51,59 @@ import { LiffService } from '../../services/liff.service';
       } @else {
         <div class="grid grid-cols-1 gap-4">
           @for (bill of bills(); track bill.id) {
-            <p-card 
+            <p-card
               [routerLink]="['/bill', bill.id]"
-              styleClass="cursor-pointer hover:shadow-lg transition-all duration-300 border-none rounded-2xl overflow-hidden active:scale-[0.98]"
+              styleClass="!rounded-2xl !shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all active:scale-[0.98] cursor-pointer !bg-white/90 dark:!bg-slate-900/90 backdrop-blur-sm overflow-hidden"
             >
-              <div class="flex items-center gap-4">
-                <div class="text-4xl bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl">
-                  {{ bill.emoji }}
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="flex justify-between items-start mb-1">
-                    <h3 class="font-bold text-lg text-slate-800 dark:text-slate-100 truncate">
+              <div
+                class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2 sm:px-4 py-1"
+              >
+                <!-- Bill Info -->
+                <div class="flex items-center gap-4">
+                  <div
+                    class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-2xl shadow-sm border border-slate-200 dark:border-slate-700"
+                  >
+                    {{ bill.emoji }}
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 truncate">
                       {{ bill.name }}
                     </h3>
-                    <span class="font-bold text-orange-500 text-lg">
-                      {{ bill.amount | currency:'THB':'symbol':'1.0-0' }}
-                    </span>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                      <p-avatar 
-                        [image]="bill.creditorAvatar" 
-                        shape="circle" 
-                        size="normal"
-                        styleClass="w-6 h-6"
+                    <p class="text-sm text-slate-500 dark:text-slate-400 truncate">
+                      {{ bill.date | date: 'mediumDate' }}
+                      @if (bill.note) {
+                        <span class="mx-1">•</span> {{ bill.note }}
+                      }
+                    </p>
+                    <div class="flex items-center gap-1.5 mt-1">
+                      <p-avatar
+                        [image]="bill.creditorAvatar"
+                        shape="circle"
+                        styleClass="!w-5 !h-5 border border-white dark:border-slate-900"
                       ></p-avatar>
-                      <span class="text-sm text-slate-500 dark:text-slate-400 truncate max-w-[100px]">
-                        {{ bill.creditorName }}
-                      </span>
+                      <span class="text-xs font-semibold text-orange-600 dark:text-orange-400"
+                        >Owe to: {{ bill.creditorName }}</span
+                      >
                     </div>
-                    <p-tag 
-                      [value]="bill.status" 
-                      [severity]="bill.status === 'PAID' ? 'success' : 'warn'"
-                      styleClass="text-[10px] px-2 py-0.5"
-                    ></p-tag>
                   </div>
-                  <div class="mt-2 text-[10px] text-slate-400 uppercase tracking-widest font-semibold">
-                    {{ bill.date | date:'mediumDate' }}
+                </div>
+
+                <!-- Amount & Status -->
+                <div class="flex items-center justify-between sm:justify-end gap-6 sm:w-1/3">
+                  <div class="text-right grow">
+                    <div class="text-xl font-bold text-slate-800 dark:text-slate-100">
+                      {{ bill.amount | currency: 'THB' : 'symbol-narrow' }}
+                    </div>
+                    <div
+                      class="text-xs font-semibold px-2 py-1 rounded-md inline-block mt-1 shadow-xs"
+                      [class]="
+                        bill.status === 'PAID'
+                          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800/50'
+                          : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border border-orange-200 dark:border-orange-800/50'
+                      "
+                    >
+                      {{ bill.status }}
+                    </div>
                   </div>
                 </div>
               </div>

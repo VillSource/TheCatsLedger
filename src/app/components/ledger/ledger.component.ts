@@ -75,7 +75,8 @@ import { LiffService } from '../../services/liff.service';
         } @else {
           @for (bill of bills(); track bill.id) {
             <p-card
-              styleClass="!rounded-2xl !shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow !bg-white/90 dark:!bg-slate-900/90 backdrop-blur-sm overflow-hidden"
+              [routerLink]="['/bill', bill.id]"
+              styleClass="!rounded-2xl !shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all active:scale-[0.98] cursor-pointer !bg-white/90 dark:!bg-slate-900/90 backdrop-blur-sm overflow-hidden"
             >
               <div
                 class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2 sm:px-4 py-1"
@@ -137,13 +138,6 @@ import { LiffService } from '../../services/liff.service';
                       {{ bill.status }}
                     </div>
                   </div>
-                  <p-button
-                    icon="pi pi-chevron-right"
-                    [text]="true"
-                    [rounded]="true"
-                    severity="secondary"
-                    [routerLink]="['/bill', bill.id]"
-                  ></p-button>
                 </div>
               </div>
             </p-card>
