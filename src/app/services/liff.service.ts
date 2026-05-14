@@ -481,11 +481,16 @@ export class LiffService {
 
     try {
       await liff.sendMessages([flexMessage]);
+      liff.closeWindow();
       return true;
     } catch (err) {
       console.error('sendMessages failed:', err);
       return false;
     }
+  }
+
+  close() {
+    liff.closeWindow();
   }
 
   getContext() {
