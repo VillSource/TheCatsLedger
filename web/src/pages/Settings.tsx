@@ -5,24 +5,14 @@ import { postPaymentsMutationOptions } from '@/api/generated/hooks/usePostPaymen
 import { useLiff } from '@/lib/liff'
 import { Card, Input, Label } from '@/components/ui/inputs'
 import { Button } from '@/components/ui/button'
-import { CreditCard, CheckCircle2, AlertCircle, LogOut } from 'lucide-react'
-
-const CHANNELS = [
-  { id: 'PromptPay', name: 'PromptPay (พร้อมเพย์)' },
-  { id: 'KBANK', name: 'Kasikornbank (กสิกรไทย)' },
-  { id: 'SCB', name: 'Siam Commercial Bank (ไทยพาณิชย์)' },
-  { id: 'BBL', name: 'Bangkok Bank (กรุงเทพ)' },
-  { id: 'KTB', name: 'Krungthai Bank (กรุงไทย)' },
-  { id: 'TTB', name: 'TMBThanachart (ทีทีบี)' },
-  { id: 'Other', name: 'Other Bank / Wallet' },
-]
+import { CreditCard, CheckCircle2, AlertCircle, LogOut, QrCode } from 'lucide-react'
 
 export const SettingsPage: React.FC = () => {
   const { profile, logout } = useLiff()
   const queryClient = useQueryClient()
 
-  const [channel, setChannel] = useState('PromptPay')
-  const [channelName, setChannelName] = useState('PromptPay')
+  const [channel] = useState('PromptPay')
+  const [channelName] = useState('PromptPay (พร้อมเพย์)')
   const [accountNo, setAccountNo] = useState('')
   const [name, setName] = useState('')
   const [savedSuccess, setSavedSuccess] = useState(false)
@@ -39,8 +29,6 @@ export const SettingsPage: React.FC = () => {
   useEffect(() => {
     if (existingPayment) {
       const p: any = existingPayment
-      if (p.channel) setChannel(p.channel)
-      if (p.channelName) setChannelName(p.channelName)
       if (p.accountNo) setAccountNo(p.accountNo)
       if (p.name) setName(p.name)
     } else if (profile?.displayName && !name) {
@@ -82,12 +70,6 @@ export const SettingsPage: React.FC = () => {
     })
   }
 
-  const handleChannelSelect = (selectedId: string) => {
-    setChannel(selectedId)
-    const match = CHANNELS.find((c) => c.id === selectedId)
-    setChannelName(match ? match.name : selectedId)
-  }
-
   return (
     <div className="space-y-5">
       <div>
@@ -115,23 +97,22 @@ export const SettingsPage: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label>Payment Channel</Label>
-            <select
-              value={channel}
-              onChange={(e) => handleChannelSelect(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-            >
-              {CHANNELS.map((ch) => (
-                <option key={ch.id} value={ch.id}>
-                  {ch.name}
-                </option>
-              ))}
-            </select>
+            <div className="flex items-center gap-2 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800">
+              <QrCode className="w-4 h-4 text-emerald-600" />
+              <span>PromptPay (พร้อมเพย์)</span>
+              <span className="ml-auto text-[10px] text-emerald-700 bg-emerald-100 font-bold px-2 py-0.5 rounded-full">
+                Active
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400 mt-1">
+              Currently available for PromptPay. Other channels (Bank accounts, TrueMoney) coming soon!
+            </p>
           </div>
 
           <div>
-            <Label>Account Number / PromptPay Phone / ID</Label>
+            <Label>PromptPay Number (Phone / National ID)</Label>
             <Input
-              placeholder="e.g. 0812345678 or 123-4-56789-0"
+              placeholder="e.g. 0812345678 or 1234567890123"
               value={accountNo}
               onChange={(e) => setAccountNo(e.target.value)}
               required

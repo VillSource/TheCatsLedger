@@ -10,6 +10,7 @@ import { Share2, Sparkles, AlertCircle } from 'lucide-react'
 import { createBillFlexMessage } from '@/lib/lineFlex'
 
 const EMOJI_OPTIONS = ['🍜', '☕', '🍻', '🎬', '🛒', '🚕', '✈️', '🎮', '🍕', '🐱']
+const QUICK_AMOUNTS = [50, 100, 150, 200, 300, 500]
 
 export const CreateBillPage: React.FC = () => {
   const navigate = useNavigate()
@@ -24,15 +25,41 @@ export const CreateBillPage: React.FC = () => {
   const [isSharing, setIsSharing] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
+  const triggerShare = async (billId: string, billName: string, billAmount: string, billEmoji: string, billNote: string) => {
+    setIsSharing(true)
+    try {
+      const flexMsg = createBillFlexMessage({
+        bill: {
+          id: billId,
+          name: billName,
+          amount: billAmount,
+          emoji: billEmoji,
+          note: billNote,
+        },
+        senderName: profile?.displayName || 'Friend',
+        liffId: import.meta.env.VITE_LIFF_ID || '',
+      })
+
+      await shareTargetPicker([flexMsg])
+    } finally {
+      setIsSharing(false)
+    }
+  }
+
   const createMutation = useMutation({
     ...postBillsMutationOptions(),
-    onSuccess: (data: any) => {
+    onSuccess: async (data: any) => {
       // In the backend, Created result returns bill.Id or response header bills/{bill.Id}
       const billId = typeof data === 'string' ? data.replace(/^bills\//, '') : data?.id || data
       setCreatedBillId(billId)
       // Invalidate bill queries
       queryClient.invalidateQueries({ queryKey: getBillsQueryKey() })
       queryClient.invalidateQueries({ queryKey: getBillsQueryKey({ query: { billToPay: true } }) })
+
+      // Automatically trigger shareTargetPicker as requested
+      setTimeout(() => {
+        triggerShare(billId, name, amount, emoji, note)
+      }, 200)
     },
     onError: (err: any) => {
       setErrorMsg(err?.message || 'Failed to create bill. Please check backend connection.')
@@ -62,26 +89,9 @@ export const CreateBillPage: React.FC = () => {
     })
   }
 
-  const handleShare = async () => {
+  const handleShareManual = async () => {
     if (!createdBillId) return
-    setIsSharing(true)
-    try {
-      const flexMsg = createBillFlexMessage({
-        bill: {
-          id: createdBillId,
-          name,
-          amount,
-          emoji,
-          note,
-        },
-        senderName: profile?.displayName || 'Friend',
-        liffId: import.meta.env.VITE_LIFF_ID || '',
-      })
-
-      await shareTargetPicker([flexMsg])
-    } finally {
-      setIsSharing(false)
-    }
+    triggerShare(createdBillId, name, amount, emoji, note)
   }
 
   if (createdBillId) {
@@ -104,9 +114,9 @@ export const CreateBillPage: React.FC = () => {
 
           <div className="pt-4 space-y-2">
             <Button
-              onClick={handleShare}
+              onClick={handleShareManual}
               disabled={isSharing}
-              className="w-full bg-[#06C755] hover:bg-[#05b34c] text-white flex items-center gap-2"
+              className="w-full bg-[#06C755] hover:bg-[#05b34c] text-white flex items-center gap-2 cursor-pointer"
             >
               <Share2 className="w-4 h-4" />
               {isSharing ? 'Opening LINE...' : 'Share to Debtor LINE Chat'}
@@ -115,7 +125,7 @@ export const CreateBillPage: React.FC = () => {
             <Button
               variant="outline"
               onClick={() => navigate({ to: '/bills/$billId', params: { billId: createdBillId } })}
-              className="w-full"
+              className="w-full cursor-pointer"
             >
               View Bill Detail
             </Button>
@@ -128,7 +138,7 @@ export const CreateBillPage: React.FC = () => {
                 setAmount('')
                 setNote('')
               }}
-              className="w-full text-xs"
+              className="w-full text-xs cursor-pointer"
             >
               + Create Another Bill
             </Button>
@@ -185,9 +195,12 @@ export const CreateBillPage: React.FC = () => {
           />
         </div>
 
-        {/* Total Amount */}
+        {/* Total Amount & Quick Amount Buttons */}
         <div>
-          <Label>Total Amount (฿)</Label>
+          <div className="flex items-center justify-between">
+            <Label>Total Amount (฿)</Label>
+            <span className="text-[11px] text-slate-400 font-medium">Quick Amount</span>
+          </div>
           <Input
             type="number"
             step="0.01"
@@ -197,6 +210,27 @@ export const CreateBillPage: React.FC = () => {
             required
             className="text-lg font-bold"
           />
+
+          {/* Quick Amount Button Pills */}
+          <div className="grid grid-cols-6 gap-1.5 mt-2">
+            {QUICK_AMOUNTS.map((val) => {
+              const isSelected = amount === val.toString()
+              return (
+                <button
+                  type="button"
+                  key={val}
+                  onClick={() => setAmount(val.toString())}
+                  className={`py-1.5 text-xs font-semibold rounded-lg transition-all border cursor-pointer ${
+                    isSelected
+                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
+                  }`}
+                >
+                  ฿{val}
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         {/* Note */}
@@ -212,9 +246,9 @@ export const CreateBillPage: React.FC = () => {
         <Button
           type="submit"
           disabled={createMutation.isPending}
-          className="w-full mt-2"
+          className="w-full mt-2 cursor-pointer"
         >
-          {createMutation.isPending ? 'Creating Bill...' : 'Create Bill'}
+          {createMutation.isPending ? 'Creating Bill & Opening LINE Share...' : 'Create & Share Bill'}
         </Button>
       </form>
     </div>

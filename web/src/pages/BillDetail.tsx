@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from '@tanstack/react-router'
 import { getBillsBillidQueryOptions } from '@/api/generated/hooks/useGetBillsBillid'
@@ -15,15 +15,21 @@ import {
   CheckCircle2,
   Copy,
   Calendar,
-  DollarSign
+  DollarSign,
+  Download,
+  QrCode
 } from 'lucide-react'
 import { createBillFlexMessage } from '@/lib/lineFlex'
+import promptpayQR from 'promptpay-qr'
+import QRCode from 'qrcode'
 
 export const BillDetailPage: React.FC = () => {
   const { billId } = useParams({ strict: false })
   const { profile, shareTargetPicker } = useLiff()
   const [copied, setCopied] = useState(false)
   const [isSharing, setIsSharing] = useState(false)
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
+  const [qrGenerating, setQrGenerating] = useState(false)
 
   // 1. Fetch Bill Detail
   const { data: billData, isLoading, error, refetch } = useQuery({
@@ -55,6 +61,52 @@ export const BillDetailPage: React.FC = () => {
 
   const ownerPayment: any = paymentData
 
+  // 3. Generate PromptPay QR Code when ownerPayment and bill amount are available
+  useEffect(() => {
+    if (!ownerPayment?.accountNo || !bill) {
+      setQrDataUrl(null)
+      return
+    }
+
+    const isPromptPay =
+      !ownerPayment.channel ||
+      ownerPayment.channel.toLowerCase().includes('promptpay') ||
+      ownerPayment.channel === 'PromptPay'
+
+    if (!isPromptPay) return
+
+    setQrGenerating(true)
+    try {
+      const numAmount = typeof bill.amount === 'string' ? parseFloat(bill.amount) : bill.amount
+      const targetAmount = !isNaN(numAmount) && numAmount > 0 ? numAmount : undefined
+      const cleanAccountNo = ownerPayment.accountNo.replace(/[^0-9]/g, '')
+
+      const payload = promptpayQR(cleanAccountNo, {
+        amount: targetAmount,
+      })
+
+      QRCode.toDataURL(payload, {
+        width: 300,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#ffffff',
+        },
+      })
+        .then((url) => {
+          setQrDataUrl(url)
+          setQrGenerating(false)
+        })
+        .catch((err) => {
+          console.error('Failed to generate QR data URL', err)
+          setQrGenerating(false)
+        })
+    } catch (err) {
+      console.error('PromptPay QR payload error', err)
+      setQrGenerating(false)
+    }
+  }, [ownerPayment, bill])
+
   const handleShareAgain = async () => {
     if (!bill) return
     setIsSharing(true)
@@ -81,6 +133,16 @@ export const BillDetailPage: React.FC = () => {
     navigator.clipboard.writeText(text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleDownloadQR = () => {
+    if (!qrDataUrl) return
+    const a = document.createElement('a')
+    a.href = qrDataUrl
+    a.download = `PromptPay-QR-${bill?.name || 'bill'}.png`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
   }
 
   if (isLoading) {
@@ -156,14 +218,14 @@ export const BillDetailPage: React.FC = () => {
           <Button
             onClick={handleShareAgain}
             disabled={isSharing}
-            className="w-full bg-[#06C755] hover:bg-[#05b34c] text-white flex items-center gap-2"
+            className="w-full bg-[#06C755] hover:bg-[#05b34c] text-white flex items-center gap-2 cursor-pointer"
           >
             <Share2 className="w-4 h-4" />
             {isSharing ? 'Sharing to LINE...' : 'Share Again to LINE Chat'}
           </Button>
         </Card>
       ) : (
-        /* DEBTOR VIEW: Owner's Payment Method */
+        /* DEBTOR VIEW: Owner's Payment Method + PromptPay QR Code */
         <Card className="p-4 space-y-3 border-amber-200/80 bg-amber-50/50">
           <div className="flex items-center gap-2">
             <CreditCard className="w-5 h-5 text-amber-600" />
@@ -171,13 +233,13 @@ export const BillDetailPage: React.FC = () => {
           </div>
 
           {isPaymentLoading ? (
-            <div className="h-14 bg-slate-200/60 rounded-xl animate-pulse" />
+            <div className="h-24 bg-slate-200/60 rounded-xl animate-pulse" />
           ) : ownerPayment ? (
-            <div className="bg-white p-3.5 rounded-xl border border-amber-200/60 space-y-2">
+            <div className="bg-white p-4 rounded-xl border border-amber-200/60 space-y-4">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-500 font-medium">Channel:</span>
                 <span className="font-bold text-slate-800">
-                  {ownerPayment.channelName || ownerPayment.channel || 'PromptPay / Bank'}
+                  {ownerPayment.channelName || ownerPayment.channel || 'PromptPay (พร้อมเพย์)'}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
@@ -186,7 +248,7 @@ export const BillDetailPage: React.FC = () => {
               </div>
               <div className="flex items-center justify-between pt-2 border-t border-slate-100">
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-bold block">Account No.</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold block">PromptPay Number</span>
                   <span className="text-base font-mono font-bold text-slate-900">
                     {ownerPayment.accountNo || '-'}
                   </span>
@@ -196,13 +258,47 @@ export const BillDetailPage: React.FC = () => {
                     size="sm"
                     variant="outline"
                     onClick={() => handleCopyAccount(ownerPayment.accountNo)}
-                    className="flex items-center gap-1 text-xs"
+                    className="flex items-center gap-1 text-xs cursor-pointer"
                   >
                     {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                     {copied ? 'Copied' : 'Copy'}
                   </Button>
                 )}
               </div>
+
+              {/* PromptPay QR Code Display */}
+              {qrDataUrl && (
+                <div className="pt-3 border-t border-slate-100 flex flex-col items-center text-center space-y-3">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full">
+                    <QrCode className="w-3.5 h-3.5" /> PromptPay QR Code
+                  </div>
+
+                  <div className="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                    <img
+                      src={qrDataUrl}
+                      alt="PromptPay QR Code"
+                      className="w-48 h-48 object-contain mx-auto"
+                    />
+                    <p className="text-[11px] font-bold text-slate-700 mt-1">
+                      Scan to pay ฿{numAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    </p>
+                  </div>
+
+                  <Button
+                    size="sm"
+                    onClick={handleDownloadQR}
+                    className="w-full bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center gap-1.5 text-xs py-2.5 cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5" /> Save QR Code
+                  </Button>
+                </div>
+              )}
+
+              {qrGenerating && (
+                <div className="text-center py-4 text-xs text-slate-400">
+                  Generating PromptPay QR Code...
+                </div>
+              )}
             </div>
           ) : (
             <div className="p-3 bg-white/80 rounded-xl text-center text-xs text-slate-500">
