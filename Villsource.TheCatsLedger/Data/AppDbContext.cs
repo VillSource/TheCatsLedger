@@ -7,6 +7,7 @@ namespace Villsource.TheCatsLedger.Data;
 public class AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUser currentUser) : DbContext(options)
 {
     public DbSet<Bill> Bills => Set<Bill>(); 
+    public DbSet<BillPayer> BillsPayers => Set<BillPayer>(); 
     
     public override int SaveChanges()
     {

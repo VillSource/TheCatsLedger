@@ -16,6 +16,8 @@ public class BillConfiguration : IEntityTypeConfiguration<Bill>
         builder.Property(x => x.Amount).IsRequired();
         builder.Property(x => x.Notes).HasMaxLength(500);
         
+        builder.HasMany(x=>x.Payers).WithOne().HasForeignKey(x=>x.BillId);
+        
         builder.ConfigureAuditable("Created");
     }
 }

@@ -55,6 +55,57 @@ namespace Villsource.TheCatsLedger.Migrations
 
                     b.ToTable("Bills");
                 });
+
+            modelBuilder.Entity("Villsource.TheCatsLedger.Domain.BillPayer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("BillId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsConfirm")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsPay")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset>("Timestamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserProfile")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BillId");
+
+                    b.ToTable("BillsPayers");
+                });
+
+            modelBuilder.Entity("Villsource.TheCatsLedger.Domain.BillPayer", b =>
+                {
+                    b.HasOne("Villsource.TheCatsLedger.Domain.Bill", null)
+                        .WithMany("Payers")
+                        .HasForeignKey("BillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Villsource.TheCatsLedger.Domain.Bill", b =>
+                {
+                    b.Navigation("Payers");
+                });
 #pragma warning restore 612, 618
         }
     }
