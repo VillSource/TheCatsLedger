@@ -65,11 +65,23 @@ namespace Villsource.TheCatsLedger.Migrations
                     b.Property<Guid>("BillId")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTimeOffset?>("ConfirmedAt")
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("IsConfirm")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsPay")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset?>("PaidAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PayerNote")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SlipImageBase64")
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTimeOffset>("Timestamp")
                         .HasColumnType("TEXT");

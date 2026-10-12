@@ -161,12 +161,43 @@ export const SettingsPage: React.FC = () => {
           variant="outline"
           size="sm"
           onClick={logout}
-          className="w-full text-slate-600 hover:text-rose-600 flex items-center justify-center gap-2"
+          className="w-full text-slate-600 hover:text-rose-600 flex items-center justify-center gap-2 cursor-pointer"
         >
           <LogOut className="w-3.5 h-3.5" />
           Log out of LINE
         </Button>
       </Card>
+
+      {/* Dev Mode Action: Trigger Daily Notification Summaries */}
+      {import.meta.env.DEV && (
+        <Card className="p-4 space-y-2 border-dashed border-amber-300 bg-amber-50/30">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-amber-800">Developer Testing</h3>
+          <p className="text-[11px] text-slate-500">
+            Trigger Hangfire summary notifications immediately (08:00 debtor & 20:00 owner summaries) via POST /summarize.
+          </p>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={async () => {
+              try {
+                const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'https://localhost:7216'}/summarize`, {
+                  method: 'POST',
+                })
+                if (res.ok) {
+                  alert('Summary notifications triggered successfully!')
+                } else {
+                  alert(`Failed: ${res.statusText}`)
+                }
+              } catch (err: any) {
+                alert(`Error: ${err?.message}`)
+              }
+            }}
+            className="w-full text-xs font-semibold cursor-pointer border-amber-300 hover:bg-amber-100"
+          >
+            ⚡ Test /summarize Notification
+          </Button>
+        </Card>
+      )}
     </div>
   )
 }

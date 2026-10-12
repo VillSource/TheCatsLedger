@@ -1,4 +1,7 @@
+using Hangfire;
+using Hangfire.Storage.SQLite;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -13,6 +16,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+builder.Services.AddHttpClient<ILineMessagingService, LineMessagingService>();
+builder.Services.AddScoped<BillSummaryJob>();
+builder.Services.AddScoped<ILiffLinkFactory, LiffLinkFactory>();
+
+// Allow up to 10MB request body for slip images
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 10 * 1024 * 1024; // 10MB
+});
 
 builder.Services.AddOpenApi(options =>
 {
@@ -56,6 +68,22 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(connectionString));
 
+// Configure Hangfire with SQLite
+var dbPath = Path.Combine(builder.Environment.ContentRootPath, "db");
+if (!Directory.Exists(dbPath))
+{
+    Directory.CreateDirectory(dbPath);
+}
+var hangfireDbPath = Path.Combine(dbPath, "hangfire.db");
+Directory.CreateDirectory("db");
+builder.Services.AddHangfire(config =>
+{
+    config.UseSimpleAssemblyNameTypeSerializer()
+          .UseRecommendedSerializerSettings()
+          .UseSQLiteStorage(hangfireDbPath);
+});
+builder.Services.AddHangfireServer();
+
 var lineAuth = builder.Configuration.GetSection("LineOptions");
 builder.Services.AddAuthentication(options =>
     {
@@ -98,12 +126,48 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
     app.MapGet("/", () => Results.Redirect("/scalar")).ExcludeFromApiReference().ExcludeFromDescription();
+    
+    // Dev endpoint to immediately test daily summary jobs
+    app.MapPost("/summarize", async (BillSummaryJob job) =>
+    {
+        await job.SendMorningDebtorSummaryAsync();
+        await job.SendEveningOwnerSummaryAsync();
+        return Results.Ok(new { message = "Summary jobs executed successfully" });
+    });
 }
 
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Hangfire Dashboard (available in Development)
+if (app.Environment.IsDevelopment())
+{
+    app.UseHangfireDashboard("/hangfire");
+}
+
+// Register Recurring Jobs
+using (var scope = app.Services.CreateScope())
+{
+    var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+    
+    // 08:00 daily reminder for debtors
+    recurringJobManager.AddOrUpdate<BillSummaryJob>(
+        "morning-debtor-summary",
+        job => job.SendMorningDebtorSummaryAsync(),
+        "0 8 * * *",
+        new RecurringJobOptions { TimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time") }
+    );
+
+    // 20:00 daily summary for bill owners
+    recurringJobManager.AddOrUpdate<BillSummaryJob>(
+        "evening-owner-summary",
+        job => job.SendEveningOwnerSummaryAsync(),
+        "0 20 * * *",
+        new RecurringJobOptions { TimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time") }
+    );
+}
 
 app.MapLedgers();
 app.MapBills();

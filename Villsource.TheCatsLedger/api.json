@@ -124,6 +124,103 @@
         }
       }
     },
+    "/bills/{billId}/pay": {
+      "post": {
+        "tags": [
+          "Villsource.TheCatsLedger"
+        ],
+        "parameters": [
+          {
+            "name": "billId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayBillBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/bills/{billId}/payers/{payerId}/confirm": {
+      "post": {
+        "tags": [
+          "Villsource.TheCatsLedger"
+        ],
+        "parameters": [
+          {
+            "name": "billId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "payerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/bills/{billId}/payers/{payerId}/reject": {
+      "post": {
+        "tags": [
+          "Villsource.TheCatsLedger"
+        ],
+        "parameters": [
+          {
+            "name": "billId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "payerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/payments/{userId}": {
       "get": {
         "tags": [
@@ -381,6 +478,32 @@
           "isConfirm": {
             "type": "boolean"
           },
+          "slipImageBase64": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "payerNote": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "paidAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "confirmedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
           "timestamp": {
             "type": "string",
             "format": "date-time"
@@ -393,6 +516,23 @@
           },
           "userProfile": {
             "type": "string"
+          }
+        }
+      },
+      "PayBillBody": {
+        "type": "object",
+        "properties": {
+          "slipImage": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "note": {
+            "type": [
+              "null",
+              "string"
+            ]
           }
         }
       },

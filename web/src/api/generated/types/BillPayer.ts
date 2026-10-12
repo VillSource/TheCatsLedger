@@ -18,6 +18,20 @@ export type BillPayer = {
     billId?: string;
     isPay?: boolean;
     isConfirm?: boolean;
+    slipImageBase64?: string | null;
+    payerNote?: string | null;
+    /**
+     * @description
+     * Format: `date-time`
+     * @type string | undefined
+    */
+    paidAt?: string | null;
+    /**
+     * @description
+     * Format: `date-time`
+     * @type string | undefined
+    */
+    confirmedAt?: string | null;
     /**
      * @description
      * Format: `date-time`
