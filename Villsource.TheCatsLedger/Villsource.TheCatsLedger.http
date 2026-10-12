@@ -1,0 +1,6 @@
+@Villsource.TheCatsLedger_HostAddress = http://localhost:5111
+
+GET {{Villsource.TheCatsLedger_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
