@@ -1,36 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Outlet } from '@tanstack/react-router'
 import { Navigation } from './Navigation'
 import { useLiff } from '@/lib/liff'
-import { Cat, AlertCircle, Loader2 } from 'lucide-react'
+import { Cat, AlertCircle } from 'lucide-react'
+import { SplashScreen } from './SplashScreen'
 
 export const Layout: React.FC = () => {
   const { isReady, isLoggedIn, profile, error, login } = useLiff()
+  const [splashFinished, setSplashFinished] = useState(false)
 
-  // Full-screen loading when app opens or authenticating to LINE
-  if (!isReady) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-emerald-50/60 to-slate-50 p-6 text-center">
-        <div className="relative mb-5">
-          <div className="w-20 h-20 bg-emerald-500 rounded-3xl flex items-center justify-center text-white shadow-xl shadow-emerald-500/25 animate-pulse">
-            <Cat className="w-11 h-11" />
-          </div>
-          <div className="absolute -bottom-1.5 -right-1.5 p-1.5 bg-white rounded-full shadow-md">
-            <Loader2 className="w-4 h-4 text-emerald-600 animate-spin" />
-          </div>
-        </div>
-
-        <h2 className="text-xl font-black text-slate-900 tracking-tight">TheCatsLedger</h2>
-        <p className="text-xs text-slate-500 mt-1 max-w-[220px]">
-          Connecting and authenticating with LINE...
-        </p>
-
-        <div className="mt-8 flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-          <span className="text-[11px] font-medium text-emerald-700">Please wait a moment</span>
-        </div>
-      </div>
-    )
+  // Show rich Splash Screen while LIFF initializes and for initial brand experience
+  if (!splashFinished || !isReady) {
+    return <SplashScreen onFinish={() => setSplashFinished(true)} duration={1800} />
   }
 
   if (error) {
