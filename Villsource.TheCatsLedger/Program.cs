@@ -6,6 +6,7 @@ using Scalar.AspNetCore;
 using Villsource.TheCatsLedger.Data;
 using Villsource.TheCatsLedger.Feature.v1.Bills;
 using Villsource.TheCatsLedger.Feature.v1.Ledgers;
+using Villsource.TheCatsLedger.Feature.v1.Payments;
 using Villsource.TheCatsLedger.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -94,5 +95,6 @@ app.UseAuthorization();
 
 app.MapLedgers();
 app.MapBills();
+app.MapPayment();
 
 app.Run();

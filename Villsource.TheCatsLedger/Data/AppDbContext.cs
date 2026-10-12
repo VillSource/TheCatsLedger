@@ -8,6 +8,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUser c
 {
     public DbSet<Bill> Bills => Set<Bill>(); 
     public DbSet<BillPayer> BillsPayers => Set<BillPayer>(); 
+    public DbSet<UserPayment> UserPayments => Set<UserPayment>(); 
     
     public override int SaveChanges()
     {
