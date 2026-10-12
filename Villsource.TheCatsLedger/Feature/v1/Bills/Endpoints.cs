@@ -26,10 +26,15 @@ public static class Endpoints
         }).RequireAuthorization();
 
 
-        group.MapGet("", async (ICurrentUser usr, AppDbContext db) =>
+        group.MapGet("", async (bool? billToPay, ICurrentUser usr, AppDbContext db) =>
         {
-            var bills = await db.Bills.Where(i => i.UserId == usr.UserId).ToListAsync();
-            return Results.Ok(bills);
+            var bills = billToPay.HasValue && billToPay.Value
+                ? db.Bills.Where(i => i.Payers.Any(x => x.UserId == usr.UserId) )
+                : db.Bills.Where(i => i.UserId == usr.UserId);
+
+            bills = bills.Include(i => i.Payers);
+            
+            return Results.Ok(bills.ToListAsync());
         }).RequireAuthorization();
 
         group.MapGet("{billId:guid}", async (Guid billId, ICurrentUser usr, AppDbContext db) =>
