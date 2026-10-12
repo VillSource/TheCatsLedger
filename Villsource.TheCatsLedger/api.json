@@ -1,0 +1,527 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Villsource.TheCatsLedger | v1",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:7216/"
+    }
+  ],
+  "paths": {
+    "/seeding": {
+      "post": {
+        "tags": [
+          "Villsource.TheCatsLedger"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/ledgers": {
+      "get": {
+        "tags": [
+          "Villsource.TheCatsLedger"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskOfListOfBill"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "tags": [
+          "Villsource.TheCatsLedger"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnonymousTypeOfstringAndstringAndstring"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bills": {
+      "post": {
+        "tags": [
+          "Villsource.TheCatsLedger"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddBillBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Villsource.TheCatsLedger"
+        ],
+        "parameters": [
+          {
+            "name": "billToPay",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/bills/{billId}": {
+      "get": {
+        "tags": [
+          "Villsource.TheCatsLedger"
+        ],
+        "parameters": [
+          {
+            "name": "billId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/payments/{userId}": {
+      "get": {
+        "tags": [
+          "Villsource.TheCatsLedger"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/payments": {
+      "post": {
+        "tags": [
+          "Villsource.TheCatsLedger"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddUserPaymentBody"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AddBillBody": {
+        "required": [
+          "name",
+          "amount",
+          "emoji",
+          "note"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "amount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "emoji": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "note": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "AddUserPaymentBody": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "string"
+          },
+          "channelName": {
+            "type": "string"
+          },
+          "accountNo": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "AggregateException": {
+        "type": "object",
+        "properties": {
+          "innerExceptions": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/Exception"
+            }
+          },
+          "message": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "targetSite": {
+            "$ref": "#/components/schemas/MethodBase"
+          },
+          "data": {
+            "type": [
+              "null",
+              "object"
+            ]
+          },
+          "innerException": {
+            "$ref": "#/components/schemas/Exception"
+          },
+          "helpLink": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "source": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "hResult": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "stackTrace": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "AnonymousTypeOfstringAndstringAndstring": {
+        "required": [
+          "userId",
+          "name",
+          "pictureUrl"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "pictureUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "Bill": {
+        "required": [
+          "id",
+          "name",
+          "amount"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "emoji": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "amount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "notes": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "payers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BillPayer"
+            }
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "userName": {
+            "type": "string"
+          },
+          "userProfile": {
+            "type": "string"
+          }
+        }
+      },
+      "BillPayer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "billId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "isPay": {
+            "type": "boolean"
+          },
+          "isConfirm": {
+            "type": "boolean"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "userName": {
+            "type": "string"
+          },
+          "userProfile": {
+            "type": "string"
+          }
+        }
+      },
+      "Exception": {
+        "type": "object",
+        "properties": {
+          "targetSite": {
+            "$ref": "#/components/schemas/MethodBase"
+          },
+          "message": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "data": {
+            "type": [
+              "null",
+              "object"
+            ]
+          },
+          "innerException": {
+            "$ref": "#/components/schemas/Exception"
+          },
+          "helpLink": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "source": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "hResult": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "stackTrace": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "MethodBase": {},
+      "TaskCreationOptions": {
+        "type": "integer"
+      },
+      "TaskOfListOfBill": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/Bill"
+            }
+          },
+          "id": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "exception": {
+            "$ref": "#/components/schemas/AggregateException"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TaskStatus"
+          },
+          "isCanceled": {
+            "type": "boolean"
+          },
+          "isCompleted": {
+            "type": "boolean"
+          },
+          "isCompletedSuccessfully": {
+            "type": "boolean"
+          },
+          "creationOptions": {
+            "$ref": "#/components/schemas/TaskCreationOptions"
+          },
+          "asyncState": {},
+          "isFaulted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TaskStatus": {
+        "type": "integer"
+      }
+    },
+    "securitySchemes": {
+      "LineOidc": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://access.line.me/oauth2/v2.1/authorize",
+            "tokenUrl": "https://api.line.me/oauth2/v2.1/token",
+            "scopes": {
+              "openid": "OpenID Connect",
+              "profile": "User Profile"
+            }
+          }
+        }
+      },
+      "Bearer": {
+        "type": "http",
+        "description": "นำ ID Token หรือ Access Token จาก LINE Mini App มาวางที่นี่",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Villsource.TheCatsLedger"
+    }
+  ]
+}
