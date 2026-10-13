@@ -1,0 +1,1 @@
+docker buildx build --platform linux/arm64 -f ./Villsource.TheCatsLedger/Dockerfile -t "villsource/the-cats-ledger:v0.0.3" --build-arg VITE_LIFF_ID="2010004068-6xxCwjXN" --push .

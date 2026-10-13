@@ -1,0 +1,1 @@
+docker build -f ./Villsource.TheCatsLedger/Dockerfile -t "villsource/the-cats-ledger:v0.0.2x" --build-arg VITE_LIFF_ID="2010004068-6xxCwjXN" .

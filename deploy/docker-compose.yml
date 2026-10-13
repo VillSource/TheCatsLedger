@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  the-cats-ledger:
+    image: villsource/the-cats-ledger:v0.0.1 
+    container_name: the-cats-ledger
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      LineOptions__ValidAudience: "YOUR_LIFF_CHANNEL_ID"
+      LineOptions__ChannelAccessToken: "YOUR_CHANNEL_ACESSTOKEN"
+      LineOptions__LIFFID: "LIFFID"

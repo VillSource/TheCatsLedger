@@ -1,0 +1,1 @@
+docker run -d -p 8080:8080 --name the-cats-ledger -e LineOptions__ValidAudience="YOUR_LIFF_CHANNEL_ID" -e LineOptions__ChannelAccessToken="YOUR_CHANNEL_ACESSTOKEN" -e LineOptions__LIFFID="LIFFID" the-cats-ledger:v0.0.2x

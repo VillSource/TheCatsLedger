@@ -2,7 +2,7 @@ import { client } from '../api/generated/.kubb/client'
 import { getCachedIdToken } from './liff'
 
 // Configure Kubb Client with Base URL from Environment
-const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://localhost:7216'
+const baseURL = import.meta.env.VITE_API_BASE_URL || ''
 
 client.setConfig({
   baseURL,

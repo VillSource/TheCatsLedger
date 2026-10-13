@@ -1,0 +1,37 @@
+name: Build and Publish Docker Image (Native ARM)
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-22.04-arm 
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Villsource.TheCatsLedger/Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/the-cats-ledger:${{ github.ref_name }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/the-cats-ledger:latest
+          build-args: |
+            VITE_LIFF_ID=${{ secrets.LIFF_ID }}

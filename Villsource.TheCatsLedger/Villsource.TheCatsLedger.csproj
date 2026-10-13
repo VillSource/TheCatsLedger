@@ -4,21 +4,47 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-      <UserSecretsId>5c925391-436b-4772-8127-5945064f9288</UserSecretsId>
-  </PropertyGroup>
+        <UserSecretsId>5c925391-436b-4772-8127-5945064f9288</UserSecretsId>
+        <SpaRoot>..\web\</SpaRoot>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Hangfire.AspNetCore" Version="1.8.25" />
-        <PackageReference Include="Hangfire.Storage.SQLite" Version="0.4.3" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.12" />
+        <Content Remove="$(SpaRoot)**" />
+        <Content Include="..\.dockerignore">
+          <Link>.dockerignore</Link>
+        </Content>
+        <None Remove="$(SpaRoot)**" />
+        <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+    </ItemGroup>
+    <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+
+        <Exec WorkingDirectory="$(SpaRoot)" Command="pnpm install" />
+        <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
+
+        <ItemGroup>
+            <DistFiles Include="$(SpaRoot)dist\**" />
+            <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+                <RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
+                <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            </ResolvedFileToPublish>
+        </ItemGroup>
+
+    </Target>
+
+    <ItemGroup>
+        <PackageReference Include="Hangfire.AspNetCore" Version="1.8.25"/>
+        <PackageReference Include="Hangfire.Storage.SQLite" Version="0.4.3"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.12"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.12">
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-          <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Nanoid" Version="3.1.0" />
-        <PackageReference Include="Scalar.AspNetCore" Version="2.17.14" />
+        <PackageReference Include="Nanoid" Version="3.1.0"/>
+        <PackageReference Include="Scalar.AspNetCore" Version="2.17.14"/>
     </ItemGroup>
 
 </Project>
