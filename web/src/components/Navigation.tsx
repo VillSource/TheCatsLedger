@@ -2,31 +2,33 @@ import React from 'react'
 import { Link, useRouterState } from '@tanstack/react-router'
 import { Receipt, HandCoins, PlusCircle, CreditCard } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useI18n } from '@/lib/i18n'
 
 export const Navigation: React.FC = () => {
   const routerState = useRouterState()
   const currentPath = routerState.location.pathname
+  const { t } = useI18n()
 
   const navItems = [
     {
       to: '/my-bills',
-      label: 'My Bills',
+      label: t('My Bills'),
       icon: Receipt,
     },
     {
       to: '/bills-to-pay',
-      label: 'Bills to Pay',
+      label: t('Bills to Pay'),
       icon: HandCoins,
     },
     {
       to: '/create-bill',
-      label: 'New Bill',
+      label: t('New Bill'),
       icon: PlusCircle,
       highlight: true,
     },
     {
       to: '/settings',
-      label: 'Payment',
+      label: t('Payment'),
       icon: CreditCard,
     },
   ]

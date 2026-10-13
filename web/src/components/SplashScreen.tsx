@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Cat, Sparkles } from 'lucide-react'
+import { useI18n } from '@/lib/i18n'
 
 interface SplashScreenProps {
   onFinish?: () => void
@@ -8,6 +9,7 @@ interface SplashScreenProps {
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, duration = 1800 }) => {
   const [fadeOut, setFadeOut] = useState(false)
+  const { t } = useI18n()
 
   useEffect(() => {
     const fadeTimer = setTimeout(() => {
@@ -54,7 +56,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, duration =
           The Cat's Ledger
         </h1>
         <p className="text-sm font-medium text-emerald-100 mt-2 max-w-xs drop-shadow-xs">
-          Smart, simple debt recording & bill splitting inside LINE
+          {t('Smart, simple debt recording & bill splitting inside LINE')}
         </p>
 
         {/* Loading dots animation */}
@@ -67,8 +69,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish, duration =
 
       {/* Bottom Branding / Version */}
       <div className="relative z-10 text-center text-xs text-emerald-100/70">
-        <p className="font-semibold tracking-wider uppercase text-[10px] text-emerald-200">LINE Mini App Edition</p>
-        <p className="mt-0.5 text-[11px]">Powered by LINE LIFF</p>
+        <p className="font-semibold tracking-wider uppercase text-[10px] text-emerald-200">{t('LINE Mini App Edition')}</p>
+        <p className="mt-0.5 text-[11px]">{t('Powered by LINE LIFF')}</p>
       </div>
     </div>
   )

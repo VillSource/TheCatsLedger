@@ -6,9 +6,11 @@ import { Link } from '@tanstack/react-router'
 import { Card } from '@/components/ui/inputs'
 import { HandCoins, ChevronRight, AlertCircle, CheckCircle2, Clock } from 'lucide-react'
 import { useLiff } from '@/lib/liff'
+import { useI18n } from '@/lib/i18n'
 
 export const BillsToPayPage: React.FC = () => {
   const { profile } = useLiff()
+  const { t, formatMoney, formatDate } = useI18n()
 
   const { data, isLoading, error, refetch } = useQuery({
     ...getBillsQueryOptions({ query: { billToPay: true } }),
@@ -31,16 +33,16 @@ export const BillsToPayPage: React.FC = () => {
     <div className="space-y-4">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-bold text-slate-900">Bills to Pay</h1>
-        <p className="text-xs text-slate-500">Expenses shared with you by others</p>
+        <h1 className="text-xl font-bold text-slate-900">{t('Bills to Pay')}</h1>
+        <p className="text-xs text-slate-500">{t('Expenses shared with you by others')}</p>
       </div>
 
       {/* Summary Card */}
       <Card className="bg-gradient-to-br from-amber-500 to-orange-600 text-white border-0 shadow-md shadow-orange-600/10 p-5">
-        <p className="text-xs font-medium text-amber-100 uppercase tracking-wider">Total Bills Involved</p>
-        <p className="text-3xl font-black mt-1">฿{totalToPay.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+        <p className="text-xs font-medium text-amber-100 uppercase tracking-wider">{t('Total Bills Involved')}</p>
+        <p className="text-3xl font-black mt-1">{formatMoney(totalToPay)}</p>
         <div className="mt-2 text-xs text-amber-100/90 flex items-center gap-2">
-          <span>{bills.length} bills pending or paid</span>
+          <span>{t('{count} bills pending or paid', { count: bills.length })}</span>
         </div>
       </Card>
 
@@ -57,12 +59,12 @@ export const BillsToPayPage: React.FC = () => {
       {error && (
         <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex flex-col items-center text-center">
           <AlertCircle className="w-6 h-6 text-rose-500 mb-1" />
-          <p className="text-xs font-medium text-rose-700">Failed to load bills to pay</p>
+          <p className="text-xs font-medium text-rose-700">{t('Failed to load bills to pay')}</p>
           <button
             onClick={() => refetch()}
             className="mt-2 text-xs text-rose-600 underline font-semibold cursor-pointer"
           >
-            Retry
+            {t('Retry')}
           </button>
         </div>
       )}
@@ -73,9 +75,9 @@ export const BillsToPayPage: React.FC = () => {
           <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400 mb-3">
             <HandCoins className="w-6 h-6" />
           </div>
-          <h3 className="text-sm font-bold text-slate-800">All clear!</h3>
+          <h3 className="text-sm font-bold text-slate-800">{t('All clear!')}</h3>
           <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
-            You don't have any pending debts or bills shared with you right now.
+            {t("You don't have any pending debts or bills shared with you right now.")}
           </p>
         </Card>
       )}
@@ -103,9 +105,9 @@ export const BillsToPayPage: React.FC = () => {
                   <div>
                     <h4 className="text-sm font-bold text-slate-800 line-clamp-1">{bill.name}</h4>
                     <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5">
-                      <span>Owner: {bill.userName || 'Friend'}</span>
+                      <span>{t('Owner: {name}', { name: bill.userName || t('Friend') })}</span>
                       {bill.timestamp && (
-                        <span>• {new Date(bill.timestamp).toLocaleDateString()}</span>
+                        <span>• {formatDate(bill.timestamp)}</span>
                       )}
                     </div>
                   </div>
@@ -114,7 +116,7 @@ export const BillsToPayPage: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <div className="text-right">
                     <span className="text-sm font-black text-slate-900 block">
-                      ฿{numAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                      {formatMoney(numAmount)}
                     </span>
                     <span
                       className={`inline-flex items-center gap-0.5 text-[10px] font-semibold mt-0.5 ${
@@ -123,11 +125,11 @@ export const BillsToPayPage: React.FC = () => {
                     >
                       {isPaid ? (
                         <>
-                          <CheckCircle2 className="w-3 h-3" /> Paid
+                          <CheckCircle2 className="w-3 h-3" /> {t('Paid')}
                         </>
                       ) : (
                         <>
-                          <Clock className="w-3 h-3" /> Pending
+                          <Clock className="w-3 h-3" /> {t('Pending')}
                         </>
                       )}
                     </span>

@@ -35,10 +35,12 @@ import {
 import { createBillFlexMessage } from '@/lib/lineFlex'
 import promptpayQR from 'promptpay-qr'
 import QRCode from 'qrcode'
+import { useI18n } from '@/lib/i18n'
 
 export const BillDetailPage: React.FC = () => {
   const { billId } = useParams({ strict: false })
   const { profile, liffId, shareTargetPicker } = useLiff()
+  const { t, locale, formatMoney, formatNumber, formatDate, formatTime } = useI18n()
   const queryClient = useQueryClient()
 
   const [copied, setCopied] = useState(false)
@@ -149,7 +151,7 @@ export const BillDetailPage: React.FC = () => {
       })
     },
     onError: (err: any) => {
-      setPayError(err?.message || 'Failed to submit payment.')
+      setPayError(err?.message || t('Failed to submit payment.'))
     },
   })
 
@@ -162,7 +164,7 @@ export const BillDetailPage: React.FC = () => {
       })
     },
     onError: (err: any) => {
-      alert(err?.message || 'Failed to confirm payment.')
+      alert(err?.message || t('Failed to confirm payment.'))
     },
   })
 
@@ -173,12 +175,12 @@ export const BillDetailPage: React.FC = () => {
       queryClient.invalidateQueries({
         queryKey: getBillsBillidQueryKey({ path: { billId: billId as string } }),
       })
-      alert('Payment rejected. Opening LINE share to notify debtor again...')
+      alert(t('Payment rejected. Opening LINE share to notify debtor again...'))
       // Re-trigger share to debtor
       await handleShareAgain()
     },
     onError: (err: any) => {
-      alert(err?.message || 'Failed to reject payment.')
+      alert(err?.message || t('Failed to reject payment.'))
     },
   })
 
@@ -194,8 +196,9 @@ export const BillDetailPage: React.FC = () => {
           emoji: bill.emoji,
           note: bill.notes,
         },
-        senderName: profile?.displayName || bill.userName || 'Friend',
+        senderName: profile?.displayName || bill.userName || t('Friend'),
         liffId,
+        locale,
       })
 
       await shareTargetPicker([flexMsg])
@@ -226,7 +229,7 @@ export const BillDetailPage: React.FC = () => {
     if (!file) return
 
     if (file.size > 10 * 1024 * 1024) {
-      setPayError('File size exceeds 10MB limit.')
+      setPayError(t('File size exceeds 10MB limit.'))
       return
     }
 
@@ -265,9 +268,9 @@ export const BillDetailPage: React.FC = () => {
     return (
       <div className="p-6 bg-rose-50 border border-rose-200 rounded-2xl text-center space-y-3">
         <AlertCircle className="w-8 h-8 text-rose-500 mx-auto" />
-        <h2 className="text-sm font-bold text-rose-800">Bill not found or error loading</h2>
+        <h2 className="text-sm font-bold text-rose-800">{t('Bill not found or error loading')}</h2>
         <Button variant="outline" size="sm" onClick={() => refetch()}>
-          Try Again
+          {t('Try Again')}
         </Button>
       </div>
     )
@@ -283,11 +286,11 @@ export const BillDetailPage: React.FC = () => {
           {bill.emoji || '🧾'}
         </div>
         <div className="inline-block px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-semibold uppercase tracking-wider mb-2">
-          {isOwner ? '👑 You are the Owner' : `Owner: ${bill.userName || 'Friend'}`}
+          {isOwner ? `👑 ${t('You are the Owner')}` : t('Owner: {name}', { name: bill.userName || t('Friend') })}
         </div>
         <h1 className="text-xl font-black text-slate-900">{bill.name}</h1>
         <p className="text-3xl font-black text-emerald-600 mt-2">
-          ฿{numAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+          {formatMoney(numAmount)}
         </p>
 
         {bill.notes && (
@@ -299,11 +302,11 @@ export const BillDetailPage: React.FC = () => {
         <div className="flex items-center justify-center gap-4 text-xs text-slate-400 mt-4 pt-3 border-t border-slate-100">
           <span className="flex items-center gap-1">
             <Calendar className="w-3.5 h-3.5" />
-            {bill.timestamp ? new Date(bill.timestamp).toLocaleDateString() : 'Recent'}
+            {bill.timestamp ? formatDate(bill.timestamp) : t('Recent')}
           </span>
           <span className="flex items-center gap-1">
             <DollarSign className="w-3.5 h-3.5" />
-            {bill.payers?.length || 0} participants
+            {t('{count} participants', { count: bill.payers?.length || 0 })}
           </span>
         </div>
       </Card>
@@ -313,27 +316,27 @@ export const BillDetailPage: React.FC = () => {
         <Card className="p-4 space-y-3 border-emerald-100 bg-emerald-50/50">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Your Payment Status</h3>
+              <h3 className="text-sm font-bold text-slate-900">{t('Your Payment Status')}</h3>
               <p className="text-xs text-slate-500">
                 {myPayerRecord?.isConfirm
-                  ? 'Payment confirmed by owner! 🎉'
+                  ? t('Payment confirmed by owner! 🎉')
                   : myPayerRecord?.isPay
-                  ? 'Paid. Waiting for owner to confirm.'
-                  : 'Transfer money and click below to notify owner.'}
+                  ? t('Paid. Waiting for owner to confirm.')
+                  : t('Transfer money and click below to notify owner.')}
               </p>
             </div>
             <div>
               {myPayerRecord?.isConfirm ? (
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Confirmed
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> {t('Confirmed')}
                 </span>
               ) : myPayerRecord?.isPay ? (
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold">
-                  <Clock className="w-3.5 h-3.5 text-amber-600" /> Pending Review
+                  <Clock className="w-3.5 h-3.5 text-amber-600" /> {t('Pending Review')}
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-slate-200 text-slate-700 rounded-full text-xs font-bold">
-                  Unpaid
+                  {t('Unpaid')}
                 </span>
               )}
             </div>
@@ -345,7 +348,7 @@ export const BillDetailPage: React.FC = () => {
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-emerald-600/10"
             >
               <Send className="w-4 h-4" />
-              {myPayerRecord?.isPay ? 'Update Payment / Slip' : 'I Have Paid (Notify Owner)'}
+              {myPayerRecord?.isPay ? t('Update Payment / Slip') : t('I Have Paid (Notify Owner)')}
             </Button>
           )}
         </Card>
@@ -359,9 +362,9 @@ export const BillDetailPage: React.FC = () => {
               <Share2 className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-emerald-950">Share with Debtors</h3>
+              <h3 className="text-sm font-bold text-emerald-950">{t('Share with Debtors')}</h3>
               <p className="text-xs text-emerald-700 mt-0.5">
-                Send this bill directly to a LINE chat group or friend so they can view the breakdown and pay you.
+                {t('Send this bill directly to a LINE chat group or friend so they can view the breakdown and pay you.')}
               </p>
             </div>
           </div>
@@ -371,7 +374,7 @@ export const BillDetailPage: React.FC = () => {
             className="w-full bg-[#06C755] hover:bg-[#05b34c] text-white flex items-center gap-2 cursor-pointer"
           >
             <Share2 className="w-4 h-4" />
-            {isSharing ? 'Sharing to LINE...' : 'Share Again to LINE Chat'}
+            {isSharing ? t('Sharing to LINE...') : t('Share Again to LINE Chat')}
           </Button>
         </Card>
       )}
@@ -381,7 +384,7 @@ export const BillDetailPage: React.FC = () => {
         <Card className="p-4 space-y-3 border-amber-200/80 bg-amber-50/50">
           <div className="flex items-center gap-2">
             <CreditCard className="w-5 h-5 text-amber-600" />
-            <h3 className="text-sm font-bold text-slate-900">Owner's Payment Method</h3>
+            <h3 className="text-sm font-bold text-slate-900">{t("Owner's Payment Method")}</h3>
           </div>
 
           {isPaymentLoading ? (
@@ -389,18 +392,18 @@ export const BillDetailPage: React.FC = () => {
           ) : ownerPayment ? (
             <div className="bg-white p-4 rounded-xl border border-amber-200/60 space-y-4">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500 font-medium">Channel:</span>
+                <span className="text-slate-500 font-medium">{t('Channel:')}</span>
                 <span className="font-bold text-slate-800">
-                  {ownerPayment.channelName || ownerPayment.channel || 'PromptPay (พร้อมเพย์)'}
+                  {ownerPayment.channelName || ownerPayment.channel || t('PromptPay (พร้อมเพย์)')}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500 font-medium">Account Name:</span>
+                <span className="text-slate-500 font-medium">{t('Account Name:')}</span>
                 <span className="font-semibold text-slate-800">{ownerPayment.name || '-'}</span>
               </div>
               <div className="flex items-center justify-between pt-2 border-t border-slate-100">
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-bold block">PromptPay Number</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('PromptPay Number')}</span>
                   <span className="text-base font-mono font-bold text-slate-900">
                     {ownerPayment.accountNo || '-'}
                   </span>
@@ -413,7 +416,7 @@ export const BillDetailPage: React.FC = () => {
                     className="flex items-center gap-1 text-xs cursor-pointer"
                   >
                     {copied ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                    {copied ? 'Copied' : 'Copy'}
+                    {copied ? t('Copied') : t('Copy')}
                   </Button>
                 )}
               </div>
@@ -422,17 +425,17 @@ export const BillDetailPage: React.FC = () => {
               {qrDataUrl && (
                 <div className="pt-3 border-t border-slate-100 flex flex-col items-center text-center space-y-3">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full">
-                    <QrCode className="w-3.5 h-3.5" /> PromptPay QR Code
+                    <QrCode className="w-3.5 h-3.5" /> {t('PromptPay QR Code')}
                   </div>
 
                   <div className="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm">
                     <img
                       src={qrDataUrl}
-                      alt="PromptPay QR Code"
+                      alt={t('PromptPay QR Code')}
                       className="w-48 h-48 object-contain mx-auto"
                     />
                     <p className="text-[11px] font-bold text-slate-700 mt-1">
-                      Scan to pay ฿{numAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                      {t('Scan to pay ฿{amount}', { amount: formatNumber(numAmount) })}
                     </p>
                   </div>
 
@@ -441,20 +444,20 @@ export const BillDetailPage: React.FC = () => {
                     onClick={handleDownloadQR}
                     className="w-full bg-slate-900 hover:bg-slate-800 text-white flex items-center justify-center gap-1.5 text-xs py-2.5 cursor-pointer"
                   >
-                    <Download className="w-3.5 h-3.5" /> Save QR Code
+                    <Download className="w-3.5 h-3.5" /> {t('Save QR Code')}
                   </Button>
                 </div>
               )}
 
               {qrGenerating && (
                 <div className="text-center py-4 text-xs text-slate-400">
-                  Generating PromptPay QR Code...
+                  {t('Generating PromptPay QR Code...')}
                 </div>
               )}
             </div>
           ) : (
             <div className="p-3 bg-white/80 rounded-xl text-center text-xs text-slate-500">
-              The owner hasn't configured their payment details yet. Ask them to update their payment settings!
+              {t("The owner hasn't configured their payment details yet. Ask them to update their payment settings!")}
             </div>
           )}
         </Card>
@@ -463,7 +466,7 @@ export const BillDetailPage: React.FC = () => {
       {/* Payers List & Owner Review Section */}
       <div className="space-y-3">
         <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 px-1">
-          Participants ({bill.payers?.length || 0})
+          {t('Participants ({count})', { count: bill.payers?.length || 0 })}
         </h3>
         {bill.payers && bill.payers.length > 0 ? (
           <div className="space-y-3">
@@ -484,7 +487,7 @@ export const BillDetailPage: React.FC = () => {
                       {payer.userProfile ? (
                         <img
                           src={payer.userProfile}
-                          alt={payer.userName || 'Payer'}
+                          alt={payer.userName || t('Payer')}
                           className="w-9 h-9 rounded-full border border-slate-200 object-cover"
                         />
                       ) : (
@@ -493,9 +496,9 @@ export const BillDetailPage: React.FC = () => {
                         </div>
                       )}
                       <div>
-                        <h5 className="text-xs font-bold text-slate-800">{payer.userName || 'Participant'}</h5>
+                        <h5 className="text-xs font-bold text-slate-800">{payer.userName || t('Participant')}</h5>
                         <span className="text-[10px] text-slate-400">
-                          {payer.timestamp ? new Date(payer.timestamp).toLocaleTimeString() : ''}
+                          {payer.timestamp ? formatTime(payer.timestamp) : ''}
                         </span>
                       </div>
                     </div>
@@ -503,15 +506,15 @@ export const BillDetailPage: React.FC = () => {
                     <div>
                       {payer.isConfirm ? (
                         <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">
-                          <CheckCircle2 className="w-3 h-3" /> Paid & Confirmed
+                          <CheckCircle2 className="w-3 h-3" /> {t('Paid & Confirmed')}
                         </span>
                       ) : payer.isPay ? (
                         <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-700">
-                          <Clock className="w-3 h-3" /> Awaiting Confirmation
+                          <Clock className="w-3 h-3" /> {t('Awaiting Confirmation')}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">
-                          Unpaid
+                          {t('Unpaid')}
                         </span>
                       )}
                     </div>
@@ -522,7 +525,7 @@ export const BillDetailPage: React.FC = () => {
                     <div className="bg-white p-2.5 rounded-xl border border-slate-100 text-xs space-y-2">
                       {payer.payerNote && (
                         <p className="text-slate-600">
-                          <span className="font-semibold text-slate-800">Note:</span> {payer.payerNote}
+                          <span className="font-semibold text-slate-800">{t('Note:')}</span> {payer.payerNote}
                         </p>
                       )}
                       {payer.slipImageBase64 && (
@@ -534,7 +537,7 @@ export const BillDetailPage: React.FC = () => {
                           >
                             <img
                               src={payer.slipImageBase64}
-                              alt="Transfer Slip"
+                              alt={t('Transfer Slip')}
                               className="w-14 h-14 object-cover"
                             />
                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -542,13 +545,13 @@ export const BillDetailPage: React.FC = () => {
                             </div>
                           </button>
                           <div>
-                            <span className="text-[11px] font-bold text-slate-800 block">Transfer Slip Uploaded</span>
+                            <span className="text-[11px] font-bold text-slate-800 block">{t('Transfer Slip Uploaded')}</span>
                             <button
                               type="button"
                               onClick={() => setInspectSlipUrl(payer.slipImageBase64 || null)}
                               className="text-[11px] text-emerald-600 font-semibold underline cursor-pointer"
                             >
-                              Tap to inspect slip
+                              {t('Tap to inspect slip')}
                             </button>
                           </div>
                         </div>
@@ -573,7 +576,7 @@ export const BillDetailPage: React.FC = () => {
                         className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-1.5 text-xs h-9 cursor-pointer"
                       >
                         <Check className="w-3.5 h-3.5" />
-                        {confirmMutation.isPending ? 'Confirming...' : 'Confirm Payment'}
+                        {confirmMutation.isPending ? t('Confirming...') : t('Confirm Payment')}
                       </Button>
 
                       <Button
@@ -591,7 +594,7 @@ export const BillDetailPage: React.FC = () => {
                         className="flex-1 flex items-center justify-center gap-1.5 text-xs h-9 cursor-pointer"
                       >
                         <X className="w-3.5 h-3.5" />
-                        {rejectMutation.isPending ? 'Rejecting...' : 'Reject & Re-share'}
+                        {rejectMutation.isPending ? t('Rejecting...') : t('Reject & Re-share')}
                       </Button>
                     </div>
                   )}
@@ -611,7 +614,7 @@ export const BillDetailPage: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
           <div className="bg-white rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900">Notify Payment</h3>
+              <h3 className="text-base font-bold text-slate-900">{t('Notify Payment')}</h3>
               <button
                 type="button"
                 onClick={() => setShowPayModal(false)}
@@ -622,7 +625,10 @@ export const BillDetailPage: React.FC = () => {
             </div>
 
             <p className="text-xs text-slate-500">
-              Let {bill.userName || 'the owner'} know you transferred ฿{numAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}.
+              {t('Let {name} know you transferred ฿{amount}.', {
+                name: bill.userName || t('the owner'),
+                amount: formatNumber(numAmount),
+              })}
             </p>
 
             {payError && (
@@ -634,16 +640,16 @@ export const BillDetailPage: React.FC = () => {
 
             <form onSubmit={handlePaySubmit} className="space-y-3">
               <div>
-                <Label>Note to Owner (Optional)</Label>
+                <Label>{t('Note to Owner (Optional)')}</Label>
                 <Input
-                  placeholder="e.g. Transferred via PromptPay at 12:45"
+                  placeholder={t('e.g. Transferred via PromptPay at 12:45')}
                   value={debtorNote}
                   onChange={(e) => setDebtorNote(e.target.value)}
                 />
               </div>
 
               <div>
-                <Label>Attach Transfer Slip (Optional, max 10MB)</Label>
+                <Label>{t('Attach Transfer Slip (Optional, max 10MB)')}</Label>
                 <input
                   type="file"
                   accept="image/*"
@@ -656,11 +662,11 @@ export const BillDetailPage: React.FC = () => {
                   <div className="relative border border-slate-200 rounded-2xl p-2 flex items-center gap-3 bg-slate-50">
                     <img
                       src={slipImageBase64}
-                      alt="Slip preview"
+                      alt={t('Slip image')}
                       className="w-14 h-14 object-cover rounded-xl"
                     />
                     <div className="overflow-hidden flex-1">
-                      <p className="text-xs font-bold text-slate-800 truncate">{slipFileName || 'Slip image'}</p>
+                      <p className="text-xs font-bold text-slate-800 truncate">{slipFileName || t('Slip image')}</p>
                       <button
                         type="button"
                         onClick={() => {
@@ -669,7 +675,7 @@ export const BillDetailPage: React.FC = () => {
                         }}
                         className="text-[11px] text-rose-600 font-semibold underline mt-0.5 cursor-pointer"
                       >
-                        Remove slip
+                        {t('Remove slip')}
                       </button>
                     </div>
                   </div>
@@ -680,8 +686,8 @@ export const BillDetailPage: React.FC = () => {
                     className="w-full border-2 border-dashed border-slate-200 hover:border-emerald-400 rounded-2xl py-4 flex flex-col items-center justify-center text-slate-400 hover:text-emerald-600 transition-all cursor-pointer bg-slate-50/50"
                   >
                     <Upload className="w-6 h-6 mb-1" />
-                    <span className="text-xs font-semibold">Upload Slip Image</span>
-                    <span className="text-[10px] text-slate-400">JPG, PNG up to 10MB</span>
+                    <span className="text-xs font-semibold">{t('Upload Slip Image')}</span>
+                    <span className="text-[10px] text-slate-400">{t('JPG, PNG up to 10MB')}</span>
                   </button>
                 )}
               </div>
@@ -693,14 +699,14 @@ export const BillDetailPage: React.FC = () => {
                   onClick={() => setShowPayModal(false)}
                   className="flex-1 cursor-pointer"
                 >
-                  Cancel
+                  {t('Cancel')}
                 </Button>
                 <Button
                   type="submit"
                   disabled={payMutation.isPending}
                   className="flex-1 bg-emerald-600 text-white cursor-pointer"
                 >
-                  {payMutation.isPending ? 'Sending...' : 'Send Notice'}
+                  {payMutation.isPending ? t('Sending...') : t('Send Notice')}
                 </Button>
               </div>
             </form>
@@ -713,7 +719,7 @@ export const BillDetailPage: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs">
           <div className="relative max-w-sm w-full bg-white rounded-3xl p-3 shadow-2xl space-y-3">
             <div className="flex items-center justify-between px-2 pt-1">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600">Transfer Slip</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600">{t('Transfer Slip')}</h4>
               <button
                 type="button"
                 onClick={() => setInspectSlipUrl(null)}
@@ -725,7 +731,7 @@ export const BillDetailPage: React.FC = () => {
             <div className="rounded-2xl overflow-hidden border border-slate-100 max-h-[70vh] flex items-center justify-center bg-black/5">
               <img
                 src={inspectSlipUrl}
-                alt="Transfer Slip Large"
+                alt={t('Transfer Slip')}
                 className="max-h-[70vh] w-auto object-contain"
               />
             </div>
@@ -735,7 +741,7 @@ export const BillDetailPage: React.FC = () => {
               onClick={() => setInspectSlipUrl(null)}
               className="w-full cursor-pointer"
             >
-              Close
+              {t('Close')}
             </Button>
           </div>
         </div>

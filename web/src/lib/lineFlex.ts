@@ -10,16 +10,23 @@ export function createBillFlexMessage({
   bill,
   senderName,
   liffId,
+  locale = 'en-US',
 }: {
   bill: BillShareData
   senderName: string
   liffId: string
+  locale?: 'en-US' | 'th-TH'
 }) {
   const numAmount = typeof bill.amount === 'string' ? parseFloat(bill.amount) : bill.amount
-  const amountFormatted = `฿${(isNaN(numAmount) ? 0 : numAmount).toLocaleString('en-US', {
+  const amountFormatted = new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: 'THB',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  })}`
+  }).format(isNaN(numAmount) ? 0 : numAmount)
+  const labels = locale === 'th-TH'
+    ? { note: 'หมายเหตุ', amount: 'ยอดเงิน', requestedBy: 'ผู้เรียกเก็บ', pay: 'จ่ายเงิน' }
+    : { note: 'Note', amount: 'Amount', requestedBy: 'Request By', pay: 'Pay' }
 
   const message: any = {
     type: 'bubble',
@@ -44,7 +51,7 @@ export function createBillFlexMessage({
         },
         {
           type: 'text',
-          text: `Note: ${bill.note || '-'}`,
+          text: `${labels.note}: ${bill.note || '-'}`,
           size: 'xs',
           color: '#aaaaaa',
           wrap: true,
@@ -65,7 +72,7 @@ export function createBillFlexMessage({
               contents: [
                 {
                   type: 'text',
-                  text: 'Amount',
+                  text: labels.amount,
                   size: 'sm',
                   color: '#555555',
                   flex: 0,
@@ -85,7 +92,7 @@ export function createBillFlexMessage({
               contents: [
                 {
                   type: 'text',
-                  text: 'Request By',
+                  text: labels.requestedBy,
                   size: 'sm',
                   color: '#555555',
                   flex: 0,
@@ -107,7 +114,7 @@ export function createBillFlexMessage({
               type: 'button',
               action: {
                 type: 'uri',
-                label: 'Pay',
+                label: labels.pay,
                 uri: `https://miniapp.line.me/${liffId}/bills/${bill.id}`,
               },
               margin: 'none',
@@ -150,7 +157,9 @@ export function createBillFlexMessage({
 
   const flexMessage: any = {
     type: 'flex',
-    altText: `New bill: ${bill.name} (${amountFormatted})`,
+    altText: locale === 'th-TH'
+      ? `บิลใหม่: ${bill.name} (${amountFormatted})`
+      : `New bill: ${bill.name} (${amountFormatted})`,
     contents: message,
   }
 

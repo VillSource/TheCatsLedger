@@ -60,5 +60,8 @@ pnpm build
 
 ---
 
+## 🌐 Localization
+The client supports Thai (`th-TH`) and US English (`en-US`). The language selector is available in the app header and on the login/error screens; the selected language is saved in local storage. First-time visitors use Thai when their browser language is Thai, and US English otherwise. Currency, dates, and times follow the selected locale.
+
 ## 🔐 Authentication
 The app initializes the LINE LIFF SDK on launch, obtains the LINE ID Token via `liff.getIDToken()`, and attaches it automatically to all backend API requests via the `Authorization: Bearer <token>` header interceptor.

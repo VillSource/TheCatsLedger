@@ -8,6 +8,7 @@ import { Card, Input, Label } from '@/components/ui/inputs'
 import { Button } from '@/components/ui/button'
 import { Share2, Sparkles, AlertCircle } from 'lucide-react'
 import { createBillFlexMessage } from '@/lib/lineFlex'
+import { useI18n } from '@/lib/i18n'
 
 const EMOJI_OPTIONS = ['🍜', '☕', '🍻', '🎬', '🛒', '🚕', '✈️', '🎮', '🍕', '🐱']
 const QUICK_AMOUNTS = [50, 100, 150, 200, 300, 500]
@@ -16,6 +17,7 @@ export const CreateBillPage: React.FC = () => {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { profile, liffId, shareTargetPicker } = useLiff()
+  const { t, locale, formatMoney } = useI18n()
 
   const [name, setName] = useState('')
   const [amount, setAmount] = useState('')
@@ -36,8 +38,9 @@ export const CreateBillPage: React.FC = () => {
           emoji: billEmoji,
           note: billNote,
         },
-        senderName: profile?.displayName || 'Friend',
+        senderName: profile?.displayName || t('Friend'),
         liffId,
+        locale,
       })
 
       await shareTargetPicker([flexMsg])
@@ -62,7 +65,7 @@ export const CreateBillPage: React.FC = () => {
       }, 200)
     },
     onError: (err: any) => {
-      setErrorMsg(err?.message || 'Failed to create bill. Please check backend connection.')
+      setErrorMsg(err?.message || t('Failed to create bill. Please check backend connection.'))
     },
   })
 
@@ -71,11 +74,11 @@ export const CreateBillPage: React.FC = () => {
     setErrorMsg(null)
     const numAmount = parseFloat(amount)
     if (!name.trim()) {
-      setErrorMsg('Please enter bill name')
+      setErrorMsg(t('Please enter bill name'))
       return
     }
     if (isNaN(numAmount) || numAmount <= 0) {
-      setErrorMsg('Please enter a valid amount')
+      setErrorMsg(t('Please enter a valid amount'))
       return
     }
 
@@ -103,11 +106,11 @@ export const CreateBillPage: React.FC = () => {
           </div>
           <div>
             <span className="inline-flex items-center gap-1 text-xs font-semibold uppercase text-emerald-700 bg-emerald-100/60 px-2.5 py-1 rounded-full">
-              <Sparkles className="w-3.5 h-3.5" /> Created Successfully
+              <Sparkles className="w-3.5 h-3.5" /> {t('Created Successfully')}
             </span>
             <h2 className="text-xl font-bold text-slate-900 mt-2">{name}</h2>
             <p className="text-3xl font-black text-slate-900 mt-1">
-              ฿{parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              {formatMoney(parseFloat(amount))}
             </p>
             {note && <p className="text-xs text-slate-500 mt-1">{note}</p>}
           </div>
@@ -119,7 +122,7 @@ export const CreateBillPage: React.FC = () => {
               className="w-full bg-[#06C755] hover:bg-[#05b34c] text-white flex items-center gap-2 cursor-pointer"
             >
               <Share2 className="w-4 h-4" />
-              {isSharing ? 'Opening LINE...' : 'Share to Debtor LINE Chat'}
+              {isSharing ? t('Opening LINE...') : t('Share to Debtor LINE Chat')}
             </Button>
 
             <Button
@@ -127,7 +130,7 @@ export const CreateBillPage: React.FC = () => {
               onClick={() => navigate({ to: '/bills/$billId', params: { billId: createdBillId } })}
               className="w-full cursor-pointer"
             >
-              View Bill Detail
+              {t('View Bill Detail')}
             </Button>
 
             <Button
@@ -140,7 +143,7 @@ export const CreateBillPage: React.FC = () => {
               }}
               className="w-full text-xs cursor-pointer"
             >
-              + Create Another Bill
+              {t('+ Create Another Bill')}
             </Button>
           </div>
         </Card>
@@ -151,8 +154,8 @@ export const CreateBillPage: React.FC = () => {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-xl font-bold text-slate-900">Create New Bill</h1>
-        <p className="text-xs text-slate-500 mt-0.5">Record an expense and split it with friends</p>
+        <h1 className="text-xl font-bold text-slate-900">{t('Create New Bill')}</h1>
+        <p className="text-xs text-slate-500 mt-0.5">{t('Record an expense and split it with friends')}</p>
       </div>
 
       {errorMsg && (
@@ -165,7 +168,7 @@ export const CreateBillPage: React.FC = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Emoji Selector */}
         <div>
-          <Label>Category Icon</Label>
+          <Label>{t('Category Icon')}</Label>
           <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
             {EMOJI_OPTIONS.map((e) => (
               <button
@@ -186,9 +189,9 @@ export const CreateBillPage: React.FC = () => {
 
         {/* Bill Title */}
         <div>
-          <Label>Bill Title</Label>
+          <Label>{t('Bill Title')}</Label>
           <Input
-            placeholder="e.g. Dinner at Shabu Shop, Taxi, Coffee"
+            placeholder={t('e.g. Dinner at Shabu Shop, Taxi, Coffee')}
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -198,8 +201,8 @@ export const CreateBillPage: React.FC = () => {
         {/* Total Amount & Quick Amount Buttons */}
         <div>
           <div className="flex items-center justify-between">
-            <Label>Total Amount (฿)</Label>
-            <span className="text-[11px] text-slate-400 font-medium">Quick Amount</span>
+            <Label>{t('Total Amount (฿)')}</Label>
+            <span className="text-[11px] text-slate-400 font-medium">{t('Quick Amount')}</span>
           </div>
           <Input
             type="number"
@@ -235,9 +238,9 @@ export const CreateBillPage: React.FC = () => {
 
         {/* Note */}
         <div>
-          <Label>Notes (Optional)</Label>
+          <Label>{t('Notes (Optional)')}</Label>
           <Input
-            placeholder="Account info or remarks"
+            placeholder={t('Account info or remarks')}
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />
@@ -248,7 +251,7 @@ export const CreateBillPage: React.FC = () => {
           disabled={createMutation.isPending}
           className="w-full mt-2 cursor-pointer"
         >
-          {createMutation.isPending ? 'Creating Bill & Opening LINE Share...' : 'Create & Share Bill'}
+          {createMutation.isPending ? t('Creating Bill & Opening LINE Share...') : t('Create & Share Bill')}
         </Button>
       </form>
     </div>

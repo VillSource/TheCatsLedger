@@ -4,9 +4,11 @@ import { Navigation } from './Navigation'
 import { useLiff } from '@/lib/liff'
 import { Cat, AlertCircle } from 'lucide-react'
 import { SplashScreen } from './SplashScreen'
+import { LocaleSelector, useI18n } from '@/lib/i18n'
 
 export const Layout: React.FC = () => {
   const { isReady, isLoggedIn, profile, error, login } = useLiff()
+  const { t } = useI18n()
   const [splashFinished, setSplashFinished] = useState(false)
 
   // Show rich Splash Screen while LIFF initializes and for initial brand experience
@@ -17,8 +19,9 @@ export const Layout: React.FC = () => {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-6 text-center">
+        <div className="absolute top-4 right-4"><LocaleSelector /></div>
         <AlertCircle className="w-12 h-12 text-rose-500 mb-3" />
-        <h2 className="text-lg font-bold text-slate-800">Connection Error</h2>
+        <h2 className="text-lg font-bold text-slate-800">{t('Connection Error')}</h2>
         <p className="text-sm text-slate-500 mt-1 max-w-xs">{error.message}</p>
       </div>
     )
@@ -27,18 +30,19 @@ export const Layout: React.FC = () => {
   if (!isLoggedIn) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-6 text-center">
+        <div className="absolute top-4 right-4"><LocaleSelector /></div>
         <div className="w-16 h-16 bg-emerald-100 rounded-3xl flex items-center justify-center text-emerald-600 mb-4 shadow-sm">
           <Cat className="w-10 h-10" />
         </div>
         <h1 className="text-2xl font-black text-slate-900 tracking-tight">TheCatsLedger</h1>
         <p className="text-sm text-slate-500 mt-2 max-w-xs">
-          Split bills and track debts easily with friends inside LINE.
+          {t('Split bills and track debts easily with friends inside LINE.')}
         </p>
         <button
           onClick={login}
           className="mt-6 w-full max-w-xs py-3.5 bg-[#06C755] hover:bg-[#05b34c] text-white font-semibold rounded-2xl shadow-md shadow-emerald-200 transition-all cursor-pointer"
         >
-          Log in with LINE
+          {t('Log in with LINE')}
         </button>
       </div>
     )
@@ -56,8 +60,10 @@ export const Layout: React.FC = () => {
             <span className="text-base font-extrabold text-slate-900 leading-none">TheCatsLedger</span>
           </div>
         </div>
-        {profile && (
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <LocaleSelector />
+          {profile && (
+            <div className="flex items-center gap-2">
             {profile.pictureUrl ? (
               <img
                 src={profile.pictureUrl}
@@ -69,8 +75,9 @@ export const Layout: React.FC = () => {
                 {profile.displayName.slice(0, 1)}
               </div>
             )}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </header>
 
       {/* Main Outlet */}
