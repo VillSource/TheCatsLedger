@@ -11,6 +11,7 @@ export interface LiffProfile {
 interface LiffContextType {
   isReady: boolean
   isLoggedIn: boolean
+  liffId: string
   idToken: string | null
   profile: LiffProfile | null
   error: Error | null
@@ -22,6 +23,7 @@ interface LiffContextType {
 const LiffContext = createContext<LiffContextType>({
   isReady: false,
   isLoggedIn: false,
+  liffId: '',
   idToken: null,
   profile: null,
   error: null,
@@ -40,31 +42,61 @@ export function getCachedIdToken(): string | null {
 export function LiffProvider({ children }: { children: React.ReactNode }) {
   const [isReady, setIsReady] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [liffId, setLiffId] = useState('')
   const [idToken, setIdToken] = useState<string | null>(null)
   const [profile, setProfile] = useState<LiffProfile | null>(null)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
-    const liffId = import.meta.env.VITE_LIFF_ID
+    let cancelled = false
 
-    if (!liffId || liffId.includes('placeholder')) {
-      console.warn('⚠️ LIFF ID is not configured or is a placeholder. Using mock profile for local development.')
-      const mockProfile: LiffProfile = {
-        userId: 'mock-user-1234',
-        displayName: 'Dev Cat',
-        pictureUrl: 'https://placekitten.com/200/200',
+    const initialize = async () => {
+      const fallbackLiffId = import.meta.env.VITE_LIFF_ID || ''
+      const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
+      let resolvedLiffId = fallbackLiffId
+
+      try {
+        const response = await fetch(`${apiBaseUrl}/line-config`)
+        if (!response.ok) {
+          throw new Error(`Request for LINE configuration failed with status ${response.status}`)
+        }
+
+        const config: unknown = await response.json()
+        if (
+          typeof config === 'object' &&
+          config !== null &&
+          'liffId' in config &&
+          typeof config.liffId === 'string' &&
+          config.liffId.trim() &&
+          !/^(your[_-]?liff[_-]?id|liffid)$/i.test(config.liffId.trim())
+        ) {
+          resolvedLiffId = config.liffId
+        }
+      } catch (configError) {
+        console.error('Failed to fetch LINE configuration; using VITE_LIFF_ID fallback', configError)
       }
-      setProfile(mockProfile)
-      setIsLoggedIn(true)
-      setIsReady(true)
-      cachedIdToken = 'mock-id-token'
-      setIdToken('mock-id-token')
-      return
-    }
 
-    liff
-      .init({ liffId })
-      .then(async () => {
+      if (cancelled) return
+      setLiffId(resolvedLiffId)
+
+      if (!resolvedLiffId || resolvedLiffId.toLowerCase().includes('placeholder')) {
+        console.warn('⚠️ LIFF ID is not configured or is a placeholder. Using mock profile for local development.')
+        const mockProfile: LiffProfile = {
+          userId: 'mock-user-1234',
+          displayName: 'Dev Cat',
+          pictureUrl: 'https://placekitten.com/200/200',
+        }
+        setProfile(mockProfile)
+        setIsLoggedIn(true)
+        setIsReady(true)
+        cachedIdToken = 'mock-id-token'
+        setIdToken('mock-id-token')
+        return
+      }
+
+      try {
+        await liff.init({ liffId: resolvedLiffId })
+        if (cancelled) return
         setIsReady(true)
         if (liff.isLoggedIn()) {
           setIsLoggedIn(true)
@@ -74,7 +106,7 @@ export function LiffProvider({ children }: { children: React.ReactNode }) {
 
           try {
             const userProfile = await liff.getProfile()
-            setProfile(userProfile)
+            if (!cancelled) setProfile(userProfile)
           } catch (profileErr) {
             console.error('Failed to get LIFF profile', profileErr)
           }
@@ -84,12 +116,18 @@ export function LiffProvider({ children }: { children: React.ReactNode }) {
             liff.login()
           }
         }
-      })
-      .catch((err) => {
+      } catch (err) {
+        if (cancelled) return
         console.error('LIFF initialization failed', err)
-        setError(err)
+        setError(err instanceof Error ? err : new Error(String(err)))
         setIsReady(true)
-      })
+      }
+    }
+
+    void initialize()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   const login = () => {
@@ -129,6 +167,7 @@ export function LiffProvider({ children }: { children: React.ReactNode }) {
       value={{
         isReady,
         isLoggedIn,
+        liffId,
         idToken,
         profile,
         error,

@@ -9,6 +9,7 @@ using Scalar.AspNetCore;
 using Villsource.TheCatsLedger.Data;
 using Villsource.TheCatsLedger.Feature.v1.Bills;
 using Villsource.TheCatsLedger.Feature.v1.Ledgers;
+using Villsource.TheCatsLedger.Feature.v1.LineConfig;
 using Villsource.TheCatsLedger.Feature.v1.Payments;
 using Villsource.TheCatsLedger.Services;
 
@@ -190,6 +191,7 @@ using (var scope = app.Services.CreateScope())
 
 app.MapLedgers();
 app.MapBills();
+app.MapLineConfig();
 app.MapPayment();
 
 app.MapFallbackToFile("index.html");

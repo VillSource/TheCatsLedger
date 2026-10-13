@@ -35,7 +35,7 @@ import QRCode from 'qrcode'
 
 export const BillDetailPage: React.FC = () => {
   const { billId } = useParams({ strict: false })
-  const { profile, shareTargetPicker } = useLiff()
+  const { profile, liffId, shareTargetPicker } = useLiff()
   const queryClient = useQueryClient()
 
   const [copied, setCopied] = useState(false)
@@ -192,7 +192,7 @@ export const BillDetailPage: React.FC = () => {
           note: bill.notes,
         },
         senderName: profile?.displayName || bill.userName || 'Friend',
-        liffId: import.meta.env.VITE_LIFF_ID || '',
+        liffId,
       })
 
       await shareTargetPicker([flexMsg])

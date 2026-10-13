@@ -1,5 +1,11 @@
 @Villsource.TheCatsLedger_HostAddress = http://localhost:5111
 
+### Get LINE LIFF configuration
+GET {{Villsource.TheCatsLedger_HostAddress}}/line-config
+Accept: application/json
+
+###
+
 GET {{Villsource.TheCatsLedger_HostAddress}}/weatherforecast/
 Accept: application/json
 

@@ -15,7 +15,7 @@ const QUICK_AMOUNTS = [50, 100, 150, 200, 300, 500]
 export const CreateBillPage: React.FC = () => {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const { profile, shareTargetPicker } = useLiff()
+  const { profile, liffId, shareTargetPicker } = useLiff()
 
   const [name, setName] = useState('')
   const [amount, setAmount] = useState('')
@@ -37,7 +37,7 @@ export const CreateBillPage: React.FC = () => {
           note: billNote,
         },
         senderName: profile?.displayName || 'Friend',
-        liffId: import.meta.env.VITE_LIFF_ID || '',
+        liffId,
       })
 
       await shareTargetPicker([flexMsg])
