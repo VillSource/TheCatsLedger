@@ -1,5 +1,6 @@
 import { useEffect, useState, createContext, useContext } from 'react'
 import liff from '@line/liff'
+import { getLineConfig } from '@/api/generated/clients/getLineConfig'
 
 export interface LiffProfile {
   userId: string
@@ -52,24 +53,11 @@ export function LiffProvider({ children }: { children: React.ReactNode }) {
 
     const initialize = async () => {
       const fallbackLiffId = import.meta.env.VITE_LIFF_ID || ''
-      const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
       let resolvedLiffId = fallbackLiffId
 
       try {
-        const response = await fetch(`${apiBaseUrl}/line-config`)
-        if (!response.ok) {
-          throw new Error(`Request for LINE configuration failed with status ${response.status}`)
-        }
-
-        const config: unknown = await response.json()
-        if (
-          typeof config === 'object' &&
-          config !== null &&
-          'liffId' in config &&
-          typeof config.liffId === 'string' &&
-          config.liffId.trim() &&
-          !/^(your[_-]?liff[_-]?id|liffid)$/i.test(config.liffId.trim())
-        ) {
+        const config = await getLineConfig().unwrap()
+        if (config.liffId.trim() && !/^(your[_-]?liff[_-]?id|liffid)$/i.test(config.liffId.trim())) {
           resolvedLiffId = config.liffId
         }
       } catch (configError) {

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { getBillsQueryOptions } from '@/api/generated/hooks/useGetBills'
+import { getApiV1BillsQueryOptions as getBillsQueryOptions } from '@/api/generated/hooks/useGetApiV1Bills'
 import type { Bill } from '@/api/generated/types/Bill'
 import { Link } from '@tanstack/react-router'
 import { Card } from '@/components/ui/inputs'

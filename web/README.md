@@ -52,11 +52,11 @@ pnpm build
 
 | Path | Screen | API Endpoint | Description |
 |---|---|---|---|
-| `/create-bill` | **Create Bill** | `POST /bills` | Form with emoji selection, name, amount & notes. On submit, triggers `liff.shareTargetPicker` to send a LINE Flex Message to debtor chats. |
-| `/my-bills` | **My Bills** | `GET /bills` | Lists all bills created by the current user with total summary card. |
-| `/bills-to-pay` | **Bills to Pay** | `GET /bills?billToPay=true` | Lists all bills shared with you by friends. Shows payment status badges. |
-| `/bills/$billId` | **Bill Detail** | `GET /bills/{billId}` & `GET /payments/{userId}` | **Role-based view:**<br/>• **Owner:** Displays "Share Again to LINE Chat" (`shareTargetPicker`).<br/>• **Debtor:** Fetches and displays owner's payment method (PromptPay / Bank account number with copy button). |
-| `/settings` | **Payment Settings** | `POST /payments` | Configure your default payment method (PromptPay, Bank name, account number, account holder name). |
+| `/create-bill` | **Create Bill** | `POST /api/v1/bills` | Form with emoji selection, name, amount & notes. On submit, triggers `liff.shareTargetPicker` to send a LINE Flex Message to debtor chats. |
+| `/my-bills` | **My Bills** | `GET /api/v1/bills` | Lists all bills created by the current user with total summary card. |
+| `/bills-to-pay` | **Bills to Pay** | `GET /api/v1/bills?billToPay=true` | Lists all bills shared with you by friends. Shows payment status badges. |
+| `/bills/$billId` | **Bill Detail** | `GET /api/v1/bills/{billId}` & `GET /api/v1/payments/{userId}` | **Role-based view:**<br/>• **Owner:** Displays "Share Again to LINE Chat" (`shareTargetPicker`).<br/>• **Debtor:** Fetches and displays owner's payment method (PromptPay / Bank account number with copy button). |
+| `/settings` | **Payment Settings** | `POST /api/v1/payments` | Configure your default payment method (PromptPay, Bank name, account number, account holder name). |
 
 ---
 

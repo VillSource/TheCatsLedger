@@ -4,6 +4,6 @@
 */
 
 export type PayBillBody = {
-    slipImage?: string | null;
-    note?: string | null;
+    slipImage: string | null;
+    note: string | null;
 };

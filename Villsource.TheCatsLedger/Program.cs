@@ -189,10 +189,11 @@ using (var scope = app.Services.CreateScope())
     );
 }
 
-app.MapLedgers();
-app.MapBills();
-app.MapLineConfig();
-app.MapPayment();
+var group = app.MapGroup("/api/v1");
+group.MapLedgers();
+group.MapBills();
+group.MapLineConfig();
+group.MapPayment();
 
 app.MapFallbackToFile("index.html");
 

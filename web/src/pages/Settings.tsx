@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getPaymentsUseridQueryOptions, getPaymentsUseridQueryKey } from '@/api/generated/hooks/useGetPaymentsUserid'
-import { postPaymentsMutationOptions } from '@/api/generated/hooks/usePostPayments'
+import {
+  getApiV1PaymentsUseridQueryOptions as getPaymentsUseridQueryOptions,
+  getApiV1PaymentsUseridQueryKey as getPaymentsUseridQueryKey,
+} from '@/api/generated/hooks/useGetApiV1PaymentsUserid'
+import { postApiV1PaymentsMutationOptions as postPaymentsMutationOptions } from '@/api/generated/hooks/usePostApiV1Payments'
+import { postSummarize } from '@/api/generated/clients/postSummarize'
 import { useLiff } from '@/lib/liff'
 import { Card, Input, Label } from '@/components/ui/inputs'
 import { Button } from '@/components/ui/button'
@@ -180,16 +184,10 @@ export const SettingsPage: React.FC = () => {
             variant="outline"
             onClick={async () => {
               try {
-                const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'https://localhost:7216'}/summarize`, {
-                  method: 'POST',
-                })
-                if (res.ok) {
-                  alert('Summary notifications triggered successfully!')
-                } else {
-                  alert(`Failed: ${res.statusText}`)
-                }
-              } catch (err: any) {
-                alert(`Error: ${err?.message}`)
+                await postSummarize().unwrap()
+                alert('Summary notifications triggered successfully!')
+              } catch (err: unknown) {
+                alert(`Error: ${err instanceof Error ? err.message : String(err)}`)
               }
             }}
             className="w-full text-xs font-semibold cursor-pointer border-amber-300 hover:bg-amber-100"

@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from '@tanstack/react-router'
-import { getBillsBillidQueryOptions, getBillsBillidQueryKey } from '@/api/generated/hooks/useGetBillsBillid'
-import { getPaymentsUseridQueryOptions } from '@/api/generated/hooks/useGetPaymentsUserid'
-import { postBillsBillidPayMutationOptions } from '@/api/generated/hooks/usePostBillsBillidPay'
-import { postBillsBillidPayersPayeridConfirmMutationOptions } from '@/api/generated/hooks/usePostBillsBillidPayersPayeridConfirm'
-import { postBillsBillidPayersPayeridRejectMutationOptions } from '@/api/generated/hooks/usePostBillsBillidPayersPayeridReject'
+import {
+  getApiV1BillsBillidQueryOptions as getBillsBillidQueryOptions,
+  getApiV1BillsBillidQueryKey as getBillsBillidQueryKey,
+} from '@/api/generated/hooks/useGetApiV1BillsBillid'
+import { getApiV1PaymentsUseridQueryOptions as getPaymentsUseridQueryOptions } from '@/api/generated/hooks/useGetApiV1PaymentsUserid'
+import { postApiV1BillsBillidPayMutationOptions as postBillsBillidPayMutationOptions } from '@/api/generated/hooks/usePostApiV1BillsBillidPay'
+import { postApiV1BillsBillidPayersPayeridConfirmMutationOptions as postBillsBillidPayersPayeridConfirmMutationOptions } from '@/api/generated/hooks/usePostApiV1BillsBillidPayersPayeridConfirm'
+import { postApiV1BillsBillidPayersPayeridRejectMutationOptions as postBillsBillidPayersPayeridRejectMutationOptions } from '@/api/generated/hooks/usePostApiV1BillsBillidPayersPayeridReject'
 import type { Bill } from '@/api/generated/types/Bill'
 import type { BillPayer } from '@/api/generated/types/BillPayer'
 import { useLiff } from '@/lib/liff'
