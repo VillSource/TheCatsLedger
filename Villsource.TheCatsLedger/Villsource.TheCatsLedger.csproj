@@ -15,7 +15,7 @@
           <Link>.dockerignore</Link>
         </Content>
         <None Remove="$(SpaRoot)**" />
-        <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+        <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**"  Visible="false"/>
     </ItemGroup>
     <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
 
